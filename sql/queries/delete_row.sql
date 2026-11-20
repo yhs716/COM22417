@@ -1,0 +1,3 @@
+DELETE FROM OML_BASIC_DATA
+ WHERE CASE_ID = :case_id
+;

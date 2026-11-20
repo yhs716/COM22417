@@ -1,0 +1,9 @@
+-- DB 오브젝트 소유자는 학번이 아닌 발급 DB 계정입니다. STUDENT00은 예시이며 본인 발급 계정으로 바꾸세요.
+-- 테이블·프로시저·모델은 STUDENT00.OML_CREATIVE_이름 형식으로 작성하고 같은 계정에서 실행하세요.
+-- 창의과제: 본인의 데이터와 SQL을 직접 설계·작성하는 작업 파일입니다.
+-- 실행 예제·정제 답안은 제공하지 않습니다.
+-- 고정 객체: OML_CREATIVE_DATA / OML_CREATIVE_PREPARED / OML_CREATIVE_PREDICT / OML_CREATIVE_RUN
+-- CASE_ID와 원본 SPLIT·USE_YN, 준비 운영 컬럼 PREP_MODE·SOURCE_KIND·FIT_YN·EXCLUDE_REASON·PREPARED_AT를 유지합니다.
+-- RUN 인자: p_action IN VARCHAR2, p_mode IN VARCHAR2, p_result OUT SYS_REFCURSOR, p_sql OUT CLOB
+-- EVALUATE 출력: VARIANT·ACTUAL·PREDICTED·N, PREDICT 출력: CASE_ID·PREDICTED·PROBABILITY
+-- 웹은 연결·실행 가능 여부를 확인하고 본인이 DB에 등록한 객체를 호출합니다.

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>기본·미션·창의 실습 가이드</title>
+<style>
+*{box-sizing:border-box}body{font:16px/1.65 system-ui,'Malgun Gothic',sans-serif;color:#142b4a;background:#f3f6fc;margin:0}main{max-width:1000px;margin:auto;padding:28px}header,section{background:white;border:1px solid #dce4f1;border-radius:12px;padding:24px;margin:18px 0}header{border-top:4px solid #3156d8}h1,h2{line-height:1.4;margin:0 0 12px}h1{font-size:1.7rem}h2{font-size:1.25rem}p{margin:10px 0}li+li{margin-top:7px}code,pre{font-family:Consolas,'Malgun Gothic',monospace;overflow-wrap:anywhere}p code,td code,li code{background:#eef2f8;padding:2px 4px;border-radius:3px}pre{background:#edf3ff;border:1px solid #bdcce5;border-radius:8px;padding:16px;overflow:auto;white-space:pre-wrap}table{border-collapse:collapse;width:100%}th,td{padding:10px;border:1px solid #dce4f1;text-align:left;vertical-align:top}th{background:#f1f5fc}.objects{min-width:780px}.scroll{overflow:auto}a{color:#2451df}nav{display:flex;gap:16px;flex-wrap:wrap}details{border:1px solid #dce4f1;border-radius:8px;margin-top:12px;padding:12px 16px}summary{cursor:pointer;font-weight:bold}.note{background:#edf3ff;border-left:4px solid #3156d8;padding:12px 16px}.muted{color:#546881;font-size:.92rem}@media(max-width:600px){main{padding:12px}header,section{padding:16px}th,td{padding:8px}h1{font-size:1.45rem}}@media print{body{background:white}main{max-width:none;padding:0}details:not([open])>*:not(summary){display:block}pre{print-color-adjust:exact}}
+</style></head><body><main>
+<header><h1>객체·프로시저 입출력 규약</h1><p>설치·수행·평가·Git/Render는 <strong>COM22417_과제설명및평가.html</strong>, SQL의 이름·인자·결과 컬럼은 이 부록을 확인하세요.</p><nav aria-label="규약 바로가기"><a href="#objects">고정 이름</a><a href="#contract">입출력 규칙</a></nav></header>
+<p class="muted">미션·창의 SQL은 sql/custom 아래의 01_tables.sql·02_procedure.sql에 저장하고 DB에 적용합니다.</p>
+<p>제출 방법은 좌측 메뉴 하단의 「과제 설명 및 평가」를 확인하세요. 모바일에서는 메뉴를 열어 같은 항목을 선택하세요.</p>
+<p>현황과 단계 상단 우측의 성공·대기는 같은 검증 결과입니다. 버튼 가장자리의 작은 번호는 ✓ 성공·○ 대기를 나타냅니다. 마우스·키보드 초점으로 툴팁, 클릭·터치로 상세 기준을 확인합니다. ① RAW → ② CLEAN 작업 카드 순서로 전처리·모델 생성·TEST 평가를 모두 완료하고 같은 입력의 예측 결과를 비교하세요. 객체 생성은 웹 새로고침으로 자동 확인하고, 전처리·모델 SQL 적용 후에는 해당 단계의 SQL 실행 결과 연계로 상태를 갱신합니다. 자세한 흐름은 통합 안내서의 ‘배포 사이트에서 완료 여부 확인’을 따릅니다.</p>
+<p>연계·성공 요약과 미션 선택은 발급 계정의 Oracle OML_WEB_STATE에 저장됩니다. 로컬과 Render 모두 새 버전을 적용하고 같은 DB·계정으로 접속하면 같은 기록을 읽습니다. 통합 안내서의 ‘진행 상태 공유’에서 기존 로컬 기록의 1회 이관과 서비스 적용 순서를 확인하세요.</p>
+<section id="objects"><h2>1. 고정 이름과 역할을 유지하세요</h2>
+<p>미션 객체 4개의 작업번호는 선택된 미션 카드의 「스키마 조회」 버튼에 표시됩니다. 팝업 상단에 펼쳐진 SQL을 DATA → PREPARED → PREDICT → RUN 탭별로 전체 복사하고 같은 발급 계정의 SQL Developer에서 선택 해제 후 F5 실행하세요. 실행을 마친 뒤 웹을 새로고침하면 객체 준비가 자동 확인됩니다. 객체만 만들었을 때는 별도 연계가 필요 없습니다. 전처리·모델 결과는 해당 단계에서 명시적으로 연계합니다. 스키마 조회·복사는 DB를 변경하지 않습니다.</p>
+<p>미션 DATA·PREPARED·PREDICT·RUN이 모두 없으면 생성 전 상태로 안내하고 상단 불일치 경고는 숨깁니다. 일부만 남거나 다른 미션의 객체가 있으면 경고를 유지합니다. 직접 삭제 후 화면을 새로고침하세요. 기본과제 초기화는 미션 객체를 삭제하지 않습니다.</p>
+<p>미션 선택과 실제 DB 적용은 다릅니다. 세 테이블·RUN의 규약이 선택 미션과 일치하면 객체 준비는 조회만으로 확인됩니다. 전처리·모델 결과를 연계한 뒤 평가·예측할 수 있습니다. 불일치이면 DB 미션으로 돌아가거나 새 미션의 DATA → PREPARED → PREDICT → RUN을 직접 적용하고 CSV 적재·연계를 진행하세요. 선택·조회만으로 DB를 변경하거나 기존 성공을 새 미션에 붙이지 않습니다. 같은 이름으로 남은 이전 모델도 생성 시각·입력 속성을 확인합니다.</p>
+<p class="note"><strong>학번과 DB 계정을 구분하세요.</strong> 객체 소유자는 학생에게 발급된 DB 계정입니다. 아래 STUDENT00은 예시이며 본인 발급 계정으로 바꿉니다. 화면과 제공 SQL에는 로그인한 실제 계정을 붙여 테이블·프로시저·모델을 표시합니다. 다른 계정으로 접속한 경우 제공 SQL은 생성·삭제 전에 계정 검사에서 중단됩니다. 직접 작성할 때도 소유자와 접속 계정을 확인하세요.</p>
+<div class="scroll"><table class="objects"><thead><tr><th>역할·준비 순서</th><th>기본</th><th>미션</th><th>창의</th></tr></thead><tbody>
+<tr><th>① DATA · 학습·TEST 원본</th><td>STUDENT00.OML_BASIC_DATA</td><td>STUDENT00.OML_MISSION_DATA</td><td>STUDENT00.OML_CREATIVE_DATA</td></tr>
+<tr><th>② PREPARED · 전처리 저장값</th><td>STUDENT00.OML_BASIC_PREPARED</td><td>STUDENT00.OML_MISSION_PREPARED</td><td>STUDENT00.OML_CREATIVE_PREPARED</td></tr>
+<tr><th>③ PREDICT · 예측 원본</th><td>STUDENT00.OML_BASIC_PREDICT</td><td>STUDENT00.OML_MISSION_PREDICT</td><td>STUDENT00.OML_CREATIVE_PREDICT</td></tr>
+<tr><th>④ RUN · 실행 프로시저</th><td>STUDENT00.OML_BASIC_RUN</td><td>STUDENT00.OML_MISSION_RUN</td><td>STUDENT00.OML_CREATIVE_RUN</td></tr></tbody></table></div>
+<p>모델 이름도 <code>STUDENT00.OML_BASIC_RAW_MODEL</code>처럼 소유자를 붙입니다. 프로시저 선언·호출·내부 조회·적재에서도 같은 소유자를 사용합니다.</p>
+<p>원본은 보존하고 전처리 값은 PREPARED에 저장합니다. 모델은 그중 <strong>선택 방식 + TRAIN + FIT_YN=Y</strong>인 행만 학습합니다. CASE_ID는 사례 식별키이며 설명변수가 아닙니다.</p>
+<p>미션 가이드는 선택한 CSV에 맞습니다. 창의는 입력 특성·정답·분류 이름과 처리 방법을 직접 정하고 CSV·테이블·프로시저를 일치시킵니다.</p></section>
+<section id="contract"><h2>2. 직접 작성할 때 지킬 입출력 규칙</h2>
+<ul><li><strong>미션:</strong> 가이드를 출발점으로 전처리·TRAIN 오류행의 학습 제외 기준과 사유(FIT_YN·EXCLUDE_REASON)를 점검·보완하고 바꾼 이유를 설명합니다. 고정 TEST 전체와 정답은 보존합니다.</li>
+<li><strong>창의:</strong> TRAIN·TEST·별도 예측 원본의 합계는 <strong>10,000건 이하</strong>입니다. SQL로 만든 행과 누적 적재도 포함합니다. RAW/CLEAN 준비행은 원본 사례로 다시 세지 않습니다.</li>
+<li><strong>CSV:</strong> 기본의 웹 적재는 파일당 <strong>5,000행 / 2 MiB</strong>. 미션·창의도 직접 만든 대상 테이블에 CSV를 업로드합니다. 창의 원본 전체 10,000건 제한은 직접 SQL 생성·누적 적재에도 적용합니다.</li></ul>
+<details><summary>고정 관리 컬럼과 학습 대상</summary>
+<p>CASE_ID는 사례 번호입니다. PREPARED에는 PREP_MODE·SOURCE_KIND·USE_YN·FIT_YN·EXCLUDE_REASON·PREPARED_AT도 유지합니다. 키는 PREP_MODE + SOURCE_KIND + CASE_ID입니다.</p>
+<p>USE_YN은 원본 사용 여부, FIT_YN은 실제 학습 여부입니다. TRAIN 중 사용 가능하고 정답이 유효한 행만 FIT_YN=Y로 만듭니다. TEST·예측·원본 N 행은 학습에서 제외합니다. 전처리 저장과 모델 학습은 분리합니다.</p></details>
+<details><summary>프로시저 인자 · 실행 명령 · 결과 컬럼</summary>
+<p>RUN의 입력 인자는 p_action IN VARCHAR2·p_mode IN VARCHAR2, 출력은 p_result OUT SYS_REFCURSOR·p_sql OUT CLOB입니다. p_mode는 RAW/CLEAN이며 한 번에 한 방식만 처리합니다.</p>
+<div class="scroll"><table><thead><tr><th>p_action</th><th>처리·출력 규칙</th></tr></thead><tbody>
+<tr><th>PREPARE</th><td>선택 방식의 TRAIN/TEST 준비값 저장. 실패하면 이전 준비값으로 롤백.</td></tr>
+<tr><th>INIT</th><td>모델이 없을 때 선택 방식의 학습 제공 행으로 최초 생성.</td></tr>
+<tr><th>RETRAIN / ADD_TRAIN</th><td>선택 모델을 현재 FIT_YN=Y 전체로 재생성. 전처리는 다시 실행하지 않음.</td></tr>
+<tr><th>VALIDATE</th><td>원본 검사. 모델 없이 가능하며 DDL·COMMIT 없음.</td></tr>
+<tr><th>EVALUATE</th><td>같은 Y/TEST 전체 평가. 출력: VARIANT·ACTUAL·PREDICTED·N.</td></tr>
+<tr><th>PREDICT</th><td>예측 원본을 같은 규칙으로 전처리 저장 후 예측. 출력: CASE_ID·PREDICTED·PROBABILITY.</td></tr>
+<tr><th>DELETE</th><td>선택 모델만 삭제. 테이블·다른 모델 유지.</td></tr></tbody></table></div>
+<p>p_result는 결과 표, p_sql은 실제 결과·학습 SQL 또는 삭제 PL/SQL 원문입니다. TRAIN은 이전 호출 호환용입니다. PROBABILITY는 예측한 분류의 0~1 확률이며 추가 결과 컬럼도 웹에 표시됩니다.</p></details>
+<details><summary>DB 적용·오류 확인</summary><p>객체가 없으면 테이블 → 프로시저 순서로 전체 F5 실행합니다. 컴파일 오류는 해당 줄을 수정하고 VALID를 확인하세요. 데이터 보존은 ALTER로 처리하고 DROP·모델 생성의 자동 커밋 범위를 확인합니다. DM$ 내부 객체는 직접 삭제하지 않습니다.</p><p>코딩도움말로 원문을 확인하세요.</p></details></section>
+</main></body></html>

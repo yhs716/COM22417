@@ -1,0 +1,19 @@
+{# Shared visual structure; actions retain their assignment-specific permissions and IDs. #}
+{% macro data_flow() -%}
+<ol class="data-flow-map" aria-label="학습데이터 작업 순서">
+  <li><span>1</span><div><b>CSV 적재</b><small>파일 → 원본 DATA</small></div></li>
+  <li><span>2</span><div><b>원본 확인</b><small>DATA · TRAIN / TEST</small></div></li>
+  <li><span>3</span><div><b>전처리 저장·확인</b><small>DATA → PREPARED</small></div></li>
+  <li><span>다음</span><div><b>모델 생성·비교</b><small>다음 탭에서 학습·평가</small></div></li>
+</ol>
+{%- endmacro %}
+{% macro step_heading(number, title, hint='') -%}
+<div class="learning-step-heading"><span class="learning-step-number" aria-hidden="true">{{ number }}</span><div><h3>{{ title }}</h3>{% if hint %}<p>{{ hint }}</p>{% endif %}</div></div>
+{%- endmacro %}
+
+{% macro sql_result_link(id) -%}
+<aside class="assignment-link-panel" aria-label="직접 SQL 실행 결과 연계">
+  <div><strong>직접 SQL 실행 후 웹에 연계</strong><p id="{{ id }}-status" role="status">SQL Developer에서 실행·COMMIT → SQL 실행 결과 연계 → 현황 확인</p></div>
+  {% if caller is defined %}{{ caller() }}{% else %}<button type="button" id="{{ id }}" aria-describedby="{{ id }}-status">SQL 실행 결과 연계</button>{% endif %}
+</aside>
+{%- endmacro %}

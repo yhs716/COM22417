@@ -1,0 +1,8 @@
+SELECT LINE
+     , POSITION
+     , TEXT
+  FROM USER_ERRORS
+ WHERE NAME = :procedure_name
+   AND TYPE = 'PROCEDURE'
+ ORDER BY SEQUENCE
+;

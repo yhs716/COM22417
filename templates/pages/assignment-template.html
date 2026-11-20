@@ -1,0 +1,217 @@
+{% from 'workflow-sections.html' import data_flow, step_heading, sql_result_link %}
+<!-- [ASSIGNMENT-UI] 원본·모델입력·예측입력 테이블과 실행 프로시저의 고정 규약을 재사용합니다. -->
+{% macro action_button(id, label, operation, secondary=false) -%}
+<span class="action-with-help"><button type="button" id="{{ id }}"{% if secondary %} class="secondary"{% endif %}{% if operation in ['prepare','initial-train','retrain','append-train','delete-model'] %} data-manual-action="{{ operation }}" disabled{% endif %}>{{ label }}</button>{% if active!='creative' %}<button type="button" class="secondary code-help" data-code="{{ operation }}" aria-label="{{ label }} 코딩도움말: SQL·소스 위치" aria-describedby="coding-{{ id }}" title="{{ label }} 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-{{ id }}" class="code-help-tooltip" role="tooltip">{{ label }} 코드 보기</span>{% endif %}</span>
+{%- endmacro %}
+<p id="object-owner-note" class="execution-status">로그인 후 발급 DB 계정을 표시합니다.</p>
+<div class="assignment-workspace" data-assignment="{{ active }}">
+  {% if active=='mission' %}<aside id="mission-binding-status" class="assignment-link-panel" role="status" aria-live="polite" hidden><div><strong>선택 미션과 DB 적용 상태</strong><p id="mission-binding-summary"></p><p id="mission-binding-next"></p><button type="button" id="mission-binding-return" class="secondary" hidden>DB 미션으로 돌아가기</button></div></aside>{% endif %}
+  <nav class="basic-tabs assignment-tabs" aria-label="과제 단계">
+    {% set steps=[('home','현황'),('data','학습데이터'),('models','모델 생성·비교'),('predictions','예측 실행')] %}
+    {% for key,label in steps %}
+    <button type="button" class="workflow-tab" data-assignment-tab="{{ key }}" aria-controls="assignment-panel-{{ key }}" aria-current="{{ 'step' if key=='home' else 'false' }}"><span class="tab-number" aria-hidden="true">0{{ loop.index }}</span>{{ label }}</button>
+    {% if not loop.last %}<button type="button" class="workflow-next" data-step-next="{{ steps[loop.index][0] }}" aria-label="다음 단계: {{ steps[loop.index][1] }}" title="{{ steps[loop.index][1] }}로 이동"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></button>{% endif %}
+    {% endfor %}
+  </nav>
+  <section class="assignment-step" id="assignment-panel-home" data-assignment-panel="home" aria-labelledby="assignment-home-title">
+    {% include 'practice-evidence.html' %}
+    {% if active=='mission' %}
+    <section class="panel compact-workbench mission-examples" aria-labelledby="mission-examples-title">
+      <div class="section-heading compact-heading"><h2 id="mission-examples-title">미션 예시 {{ mission_datasets|length }}종 · 하나를 선택하세요</h2><span class="muted">합성 5등급 분류</span></div>
+      <p class="execution-condition">각 주제는 TRAIN 1,200행 · 고정 TEST 300행 · 별도 예측 30행입니다. 미션을 선택하고 SQL 가이드를 실행하거나 내려받은 SQL을 수정하여 실습하세요.</p>
+      <div class="mission-example-grid">
+        {% for item in mission_datasets %}
+        <article class="mission-example-card" data-mission-card="{{ item.key }}">
+          <h3>{{ item.title }}</h3><p>{{ item.description }}</p>
+          <div class="mission-card-buttons"><span class="action-with-help mission-schema-action"><button type="button" class="secondary" data-mission-schema="{{ item.key }}" aria-haspopup="dialog">스키마 조회</button></span><button type="button" class="secondary" data-mission-preview="{{ item.key }}" aria-haspopup="dialog">데이터 조회</button><button type="button" class="mission-select-button" data-mission-choice="{{ item.key }}" aria-pressed="false">이 미션 선택</button></div>
+          <div class="mission-card-downloads"><a href="/download/datasets/{{ item.key }}?kind=training">학습·TEST CSV</a><a href="/download/datasets/{{ item.key }}?kind=prediction">예측 CSV</a></div>
+        </article>
+        {% endfor %}
+      </div>
+      <dl id="mission-variable-summary" class="mission-variable-summary" hidden>
+        <div><dt>식별자 키</dt><dd id="mission-key-fields"></dd></div>
+        <div><dt>설명변수</dt><dd id="mission-feature-fields"></dd></div>
+        <div><dt>타깃변수</dt><dd id="mission-target-fields"></dd></div>
+      </dl>
+      <p class="compact-note muted">데이터 조회에서 학습·TEST와 예측 CSV를 미리 보고 전체 파일을 내려받을 수 있습니다. DB 테이블이 없어도 사용할 수 있습니다.</p>
+      <p id="mission-selection-note" class="execution-status" role="status">선택 전 · 위 {{ mission_datasets|length }}개 중 하나를 선택하고 CSV를 내려받으세요.</p>
+      <div class="actions mission-guide-actions"><button type="button" class="secondary" id="clear-mission-selection">미션 선택 해제</button><button type="button" class="secondary" data-code="setup">선택 미션 SQL 가이드 · RUN 등록</button><a class="button secondary" href="/api/assignments/mission/guide/download?file=tables" id="mission-tables-download" hidden>01_tables.sql 다운로드</a><a class="button secondary" href="/api/assignments/mission/guide/download?file=procedure" id="mission-procedure-download" hidden>02_procedure.sql 다운로드</a></div>
+
+      <p class="compact-note muted">주제 선택과 다운로드는 DB 객체 생성·데이터 적재를 수행하지 않습니다. 스키마 SQL 직접 실행 → 웹 새로고침으로 객체 확인 → CSV 적재 → SQL 전처리·모델 학습 → 전처리·모델 결과 연계 순서로 진행하세요.</p>
+      <a href="#" data-assignment-tab="data">학습데이터 · 선택한 CSV 적재 →</a>
+      <script type="application/json" id="mission-dataset-catalog">{{ mission_datasets|tojson }}</script>
+    </section>
+    {% else %}{% from 'dataset-overview.html' import dataset_overview %}{{ dataset_overview('creative') }}{% endif %}
+    <section class="panel compact-workbench assignment-connection-panel" aria-labelledby="assignment-connection-title">
+      <div class="assignment-section-heading"><div><h2 id="assignment-home-title">과제 준비</h2><p id="assignment-connection-title" class="muted">아래 이름으로 테이블 3개와 실행 프로시저를 만들면 웹에서 사용할 수 있습니다.</p></div><span id="assignment-ready-badge" class="assignment-status" data-state="pending">확인 전</span></div>
+      <form id="assignment-connection">
+        {% from 'object-names.html' import object_names %}
+        {{ object_names('assignment-object',assignments[active],false) }}
+        {% if active=='mission' %}<p class="compact-note">객체 4개를 직접 생성한 뒤 웹을 새로고침하면 실제 DB 규약을 조회해 준비 상태를 자동 확인합니다. 객체 생성만으로는 별도 연계 버튼을 누르지 않아도 됩니다.</p>{% else %}{% call sql_result_link('assignment-check') %}<button type="button" id="assignment-check" aria-describedby="assignment-check-status">SQL 실행 결과 연계</button>{% endcall %}{% endif %}<div class="reset-actions">{% set guides=true %}<span class="action-with-help"><button type="button" id="assignment-drop-objects" class="secondary danger" data-manual-action="drop-objects" disabled>실습 오브젝트 삭제 · 직접 SQL</button>{% if guides %}<button type="button" class="secondary code-help" data-code="drop-objects" aria-label="실습 오브젝트 삭제 · 직접 SQL 코딩도움말">?</button>{% endif %}</span><small>본인 SQL로 실행 후 {{ '새로고침으로 확인' if active=='mission' else '연계 확인' }}</small></div>
+      </form>
+      <div class="assignment-readiness-heading"><h3>테이블·프로시저 준비 상태</h3><button type="button" id="assignment-diagnostic" class="text-button" hidden>연결 상태·오류 상세</button></div>
+      <p id="assignment-readiness-summary" class="assignment-state-copy">로그인 후 실제 DB 객체를 조회합니다.</p>
+      <div id="assignment-readiness-table" class="table-wrap assignment-object-table"></div>
+      <aside class="assignment-next compact-next"><div><h3 id="assignment-next-title">과제 준비 상태를 확인하세요</h3><p id="assignment-next-description">본인 계정의 테이블과 프로시저를 조회한 뒤 다음 단계를 안내합니다.</p></div><div class="actions"><a href="#" data-assignment-tab="data">학습데이터 →</a><a href="#" data-assignment-tab="models">모델 생성·비교 →</a><a href="#" data-assignment-tab="predictions">예측 실행 →</a></div></aside>
+      <details class="workbench-detail"><summary>SQL 준비 순서 · 테이블 → 프로시저 → 연결 확인</summary><ol class="assignment-setup-steps">
+        <li><b>테이블 작성</b><span><code>sql/custom/{{ active }}/01_tables.sql</code>의 원본·모델입력·예측 컬럼을 본인 데이터에 맞게 수정합니다.</span></li>
+        <li><b>프로시저 작성</b><span><code>02_procedure.sql</code>의 PREPARE에 전처리 INSERT SELECT, 학습에 PREPARED SELECT, 평가·예측에 같은 컬럼 대응을 작성합니다.</span></li>
+        <li><b>같은 계정에서 실행</b><span>SQL Developer에서 테이블 → 프로시저 순서로 F5 실행한 뒤 연결 확인합니다. 웹 코드는 수정하지 않습니다.</span></li>
+      </ol></details>
+      {% include 'object-naming-guide.html' %}
+      <details class="assignment-call-contract"><summary>프로시저 호출 규약과 수정 반영</summary><p><code>프로시저(p_action IN VARCHAR2, p_mode IN VARCHAR2, p_result OUT SYS_REFCURSOR, p_sql OUT CLOB)</code></p><p>고정 입력: p_action은 PREPARE / INIT / RETRAIN / ADD_TRAIN / DELETE / EVALUATE / PREDICT / VALIDATE, p_mode는 RAW / CLEAN입니다. 최초 학습은 모델 하나만 생성합니다.</p><p>테이블은 CASE_ID(고유키)를 유지하고 나머지 특성·정답 컬럼을 자유롭게 정합니다. 원본의 SPLIT·USE_YN과 준비 테이블의 PREP_MODE·SOURCE_KIND·FIT_YN·EXCLUDE_REASON을 유지하고, PREPARE에서 실제 학습 제공 조건을 구현합니다. CSV 헤더는 실제 컬럼명과 일치시킵니다.</p><p>고정 출력: EVALUATE는 VARIANT·ACTUAL·PREDICTED·N(건수), PREDICT는 CASE_ID·PREDICTED·PROBABILITY(0~1). 분류 라벨은 자유이며 Python에서 BUY/SELL로 제한하지 않습니다. 추가 출력 컬럼도 표에 표시합니다. p_sql은 실행한 SELECT 원문입니다.</p><p>객체·컴파일 상태·인자 규약만 확인합니다. 테이블이나 모델을 자동 생성하지 않습니다. SQL만 수정했다면 서버 재시작은 필요 없습니다.</p></details>
+    </section>
+    <details class="panel compact-support"><summary>과제 목표 · 직접 구현할 내용과 실행 범위 · 제출</summary>
+      <p>{{ '제공 데이터 1종으로 구현' if active=='mission' else '직접 만든 데이터로 구현' }} · {{ '문제 5 · 구현 20 · 제약 준수 5점' if active=='mission' else '설계 10 · 이유·활용 10점' }} · 제출 방법은 좌측 메뉴 하단의 「과제 설명 및 평가」를 확인하세요.</p>
+      <aside class="assignment-learning-note"><h3>직접 구현할 내용과 실행 범위</h3><p>{{ '선택 미션의 실행 가능한 SQL 가이드로 흐름을 익히고, 내려받은 SQL의 전처리·학습 설정을 수정해 결과를 비교하세요.' if active=='mission' else '데이터·테이블·전처리·학습·평가·예측 SQL을 직접 설계·작성하세요. 이 화면은 연결과 실행 가능 여부를 확인하며 안내 쿼리는 제공하지 않습니다.' }}</p><p>오류 행의 제외 기준과 사유는 <code>FIT_YN</code>·<code>EXCLUDE_REASON</code>으로 확인하고, 고정 TEST 전체와 정답은 보존하세요.</p>{% if active=='creative' %}<p>원본 사례는 TRAIN·TEST·별도 예측 합계 <b>10,000건 이하</b>입니다. 직접 SQL 생성·반복 적재도 포함하여 본인 프로시저에서 검사하세요. 파일별 5,000행 / 2 MiB 제한과 별개입니다.</p>{% endif %}</aside>
+    </details>
+  </section>
+  {% from 'model-lab.html' import model_lab, mode_choice, model_learning, preparation_panel %}
+  <section class="assignment-step" id="assignment-panel-data" data-assignment-panel="data" aria-labelledby="assignment-data-title" hidden>
+    <section class="panel data-workbench">
+      <div class="section-heading"><h2 id="assignment-data-title">학습 데이터 · 원본 적재와 전처리</h2><span class="muted">CSV는 화면에서 적재 · 테이블 생성·전처리·학습은 직접 SQL</span></div>
+      {% if active=='mission' %}
+      <div class="assignment-dataset-controls compact-dataset dataset-context"><label>미션 선택<select id="mission-dataset"><option value="">{{ mission_datasets|length }}종 중 선택</option>{% for item in mission_datasets %}<option value="{{ item.key }}">{{ item.title }}</option>{% endfor %}</select></label><div class="actions"><button type="button" id="mission-preview-selected" class="secondary" aria-haspopup="dialog" hidden>CSV 데이터 조회</button><a id="mission-download" class="button secondary" hidden>학습·TEST CSV</a><a id="mission-prediction-download" class="button secondary" hidden>예측 CSV</a><a href="#" data-assignment-tab="home">예시 {{ mission_datasets|length }}종 다시 보기</a></div></div>
+      <p id="mission-data-selection" class="execution-status">선택 전 · 현황의 예시 {{ mission_datasets|length }}종 또는 위 목록에서 미션을 선택하세요.</p>
+      {% endif %}
+      {% if active=='creative' %}<div class="dataset-context"><strong>창의 미션 · 나의 분류 문제</strong><span class="muted">직접 만든 테이블의 컬럼에 맞는 CSV를 사용하세요.</span></div>{% endif %}
+      {{ data_flow() }}
+      <section class="learning-workstep" data-learning-stage="csv">
+      {{ step_heading(1,'학습 CSV 적재','CSV 원본을 DATA 테이블에 저장합니다.') }}
+      <div class="object-line"><span>원본 TRAIN·TEST</span><code id="assignment-training-target">{{ assignments[active].training_table }}</code></div>
+      <div class="csv-upload"><label for="assignment-file">학습 CSV</label><div class="upload-choice-row"><input id="assignment-file" type="file" accept=".csv,text/csv" aria-describedby="assignment-file-state" disabled></div><div class="upload-footer"><span id="assignment-file-state" class="muted" role="status" aria-live="polite">{{ '파일 선택 → 교체 적재. 첫 줄 영문 헤더·쉼표 구분으로 500행씩 적재합니다.' if active=='mission' else '직접 만든 테이블에 맞는 CSV를 선택하고 교체 적재를 누르세요.' }}</span><div class="actions">{{ action_button('assignment-import','CSV 교체 적재','import') }}</div></div></div>
+      <div class="reset-actions">{% set guides=true %}<span class="action-with-help"><button type="button" id="assignment-clear-training" class="secondary danger" data-manual-action="clear-training" disabled>학습 데이터 비우기 · 직접 SQL</button>{% if guides %}<button type="button" class="secondary code-help" data-code="clear-training" aria-label="학습 데이터 비우기 · 직접 SQL 코딩도움말">?</button>{% endif %}</span></div>
+  <p id="assignment-data-status" class="execution-status control-status" role="status">테이블·프로시저 준비 상태 확인 전입니다.</p>
+      </section>
+      <details id="assignment-original-detail" class="learning-workstep original-data-step" data-learning-stage="original" open>
+        <summary>{{ step_heading(2,'원본 데이터 확인','DATA에 적재된 값을 먼저 확인합니다.') }}</summary>
+        <div class="workflow-query-bar"><span id="assignment-data-count" class="assignment-result-count">조회 전</span>{{ action_button('assignment-data-refresh','원본 데이터 조회','data',true) }}</div>
+        <div id="assignment-data" class="table-wrap empty">원본 데이터 조회를 누르세요.</div>
+      </details>
+      {{ preparation_panel(true, 'OML_' + active|upper,active!='creative') }}
+
+      {% if active=='mission' %}<details class="workbench-detail"><summary>미션 데이터 설명 · 컬럼·정답 기준</summary><p id="mission-dataset-empty">TRAIN 1,200행 · 고정 TEST 300행 · 별도 예측 30행. 미션을 선택하세요.</p><p id="mission-baseline" hidden></p><div id="mission-fields" class="table-wrap" hidden></div></details>{% endif %}
+    </section>
+  </section>
+  <section class="assignment-step" id="assignment-panel-models" data-assignment-panel="models" aria-label="모델 생성·비교" hidden>
+    <section class="panel model-workbench">
+      {% if active=='mission' %}<p id="mission-model-selection" class="execution-status">현황에서 미션을 선택하면 해당 미션의 모델 SQL 가이드를 제공합니다.</p>{% endif %}
+      {{ model_lab(true, 'OML_' + active|upper,active!='creative') }}
+      <div class="section-heading result-heading"><h3>같은 TEST · 두 모델 성능 비교</h3>{{ action_button('assignment-evaluate','선택 모델 TEST 평가','evaluate',true) }}</div>
+      <p id="assignment-evaluate-status" class="execution-status" role="status">모델 상태를 확인한 뒤 TEST 평가를 실행하세요.</p>
+      <div id="assignment-comparison" class="table-wrap compare-wrap model-comparison-wrap"><table class="compare-table" aria-label="RAW·CLEAN 모델 비교">
+        <thead><tr><th scope="col">비교 항목</th>{% for v, label in [('RAW','정제 미적용'),('CLEAN','정제 적용')] %}<th scope="col">{{ v }} · {{ label }}<code id="assignment-compare-name-{{ v }}" class="compare-model-name">OML_{{ active|upper }}_{{ v }}_MODEL</code></th>{% endfor %}</tr></thead>
+        <tbody>
+          <tr><th scope="row">모델 상태</th>{% for v in ['RAW','CLEAN'] %}<td><span id="assignment-compare-state-{{ v }}" class="pill">확인 전</span></td>{% endfor %}</tr>
+          <tr class="score-row"><th scope="row">TEST 정확도</th>{% for v in ['RAW','CLEAN'] %}<td><strong id="assignment-compare-accuracy-{{ v }}">—</strong></td>{% endfor %}</tr>
+          <tr><th scope="row">정답 / TEST · 오분류</th>{% for v in ['RAW','CLEAN'] %}<td><span id="assignment-compare-correct-{{ v }}">—</span> · 오분류 <span id="assignment-compare-errors-{{ v }}">—</span></td>{% endfor %}</tr>
+        </tbody>
+      </table></div>
+      <p id="assignment-evaluation-count" class="execution-status">평가 전</p>
+      <details class="workbench-detail"><summary>선택 모델 · 정답별 예측 건수</summary><div id="assignment-evaluation" class="table-wrap"></div></details>
+      {{ model_learning(true,active!='creative') }}
+    </section>
+  </section>
+  <section class="assignment-step" id="assignment-panel-predictions" data-assignment-panel="predictions" aria-labelledby="assignment-predictions-title" hidden>
+    <section class="panel compact-workbench prediction-lab">
+      <div class="section-heading compact-heading"><h2 id="assignment-predictions-title">예측 실행</h2><span class="muted">저장된 모델로 신규 입력 예측</span></div>
+      <div class="object-line"><span>예측 입력 테이블</span><code id="assignment-prediction-target">{{ assignments[active].prediction_table }}</code></div>
+      {% if active=='mission' %}<p id="mission-prediction-selection" class="execution-status">선택한 미션의 별도 예측 CSV 30행을 내려받아 적재하세요.</p>{% endif %}
+      <section class="learning-workstep" data-prediction-stage="csv">{{ step_heading(1,'예측 CSV 적재','새 입력을 PREDICT 테이블에 저장합니다.') }}
+      <div class="csv-upload"><label for="assignment-prediction-file">예측 CSV</label><div class="upload-choice-row"><input id="assignment-prediction-file" type="file" accept=".csv,text/csv" aria-describedby="assignment-prediction-file-state" disabled></div><div class="upload-footer"><span id="assignment-prediction-file-state" class="muted" role="status" aria-live="polite">예측 CSV를 선택하고 교체 적재를 누르세요.</span><div class="actions">{{ action_button('assignment-prediction-import','CSV 교체 적재','prediction-import') }}</div></div></div>
+      <div class="reset-actions">{% set guides=true %}<span class="action-with-help"><button type="button" id="assignment-clear-prediction" class="secondary danger" data-manual-action="clear-prediction" disabled>예측 입력 비우기 · 직접 SQL</button>{% if guides %}<button type="button" class="secondary code-help" data-code="clear-prediction" aria-label="예측 입력 비우기 · 직접 SQL 코딩도움말">?</button>{% endif %}</span></div>
+  <p id="assignment-prediction-input-status" class="execution-status control-status" role="status">예측 입력 테이블의 상태 확인 전입니다.</p>
+      </section>
+      <details id="assignment-input-detail" class="learning-workstep original-data-step" data-prediction-stage="original" open>
+        <summary>{{ step_heading(2,'예측 입력 확인','적재된 입력을 먼저 확인합니다.') }}</summary>
+        <div class="workflow-query-bar"><span class="muted">PREDICT · RAW/CLEAN 공통 입력</span>{{ action_button('assignment-prediction-data','예측 입력 조회','prediction-data',true) }}</div>
+        <div id="assignment-input-rows" class="table-wrap empty">예측 입력 조회를 누르세요.</div>
+      </details>
+      <section class="learning-workstep prediction-model-panel" data-prediction-stage="predict">{{ step_heading(3,'두 모델 예측·비교','RAW 예측 후 CLEAN으로 전환해 같은 입력의 결과를 비교합니다.') }}
+      {{ sql_result_link('assignment-prediction-link') }}
+      {{ mode_choice('assignment-predict-mode','assignment-predict-mode','OML_' + active|upper,true) }}
+      <div class="execution-toolbar">{{ action_button('assignment-predict','선택한 모델로 예측','predict') }}{% if active!='creative' %}<code id="assignment-predict-call">{{ assignments[active].procedure_name }}('PREDICT', 'RAW', …)</code>{% endif %}</div>
+      <p id="assignment-predict-status" class="execution-status" role="status">선택 모델의 상태 확인 전입니다.</p>
+      <p class="execution-condition">적재한 예측 원본 → 예측 프로시저에서 선택 방식으로 전처리 → <code>{{ assignments[active].prepared_table }}</code>의 PREDICT 행 → 예측. 학습용 TRAIN·TEST 저장값은 유지합니다.</p>
+      </section>
+      <section class="learning-workstep" data-prediction-stage="result">{{ step_heading(4,'예측 결과','분류와 확률을 확인합니다.') }}
+      <div class="section-heading result-heading"><h4>실행 결과</h4><span id="assignment-predictions-count" class="assignment-result-count">실행 전</span><a id="assignment-proof-return" href="#" data-assignment-tab="home" hidden>최종 현황 확인 →</a></div><p id="assignment-prediction-comparison" class="execution-status"></p><div id="assignment-predictions" class="table-wrap"></div><p class="compact-note muted">{{ "제공 미션 SQL은 분류·확률을 조회만 합니다. 예측 전처리 값은 DB에 저장됩니다." if active=="mission" else "웹은 예측 결과를 조회합니다. DB 결과 저장 여부는 직접 작성한 프로시저에 따릅니다." }} 제출 방법은 좌측 메뉴 하단의 「과제 설명 및 평가」를 확인하세요.</p>
+
+      </section>
+      <details class="workbench-detail"><summary>고정 입출력 규약 · SQL 수정 위치</summary><p><code>sql/custom/{{ active }}/02_procedure.sql</code>의 PREDICT를 수정하세요. 출력은 CASE_ID · PREDICTED · PROBABILITY(0~1)이며, 추가 컬럼도 표시합니다. 웹의 입력·출력 규약을 유지하면 컬럼·정답·정제·모델은 프로시저에서 수정할 수 있습니다.</p><p>CSV 적재는 입력만 저장하며, 모델 학습이나 예측을 자동 실행하지 않습니다. 같은 입력 해시의 이전 성공 결과만 비교합니다. 성능 향상을 보장하지 않습니다.</p></details>
+    </section>
+  </section>
+</div>
+<details class="panel compact-support"><summary>실습 기록 · 이전 TEST·예측 결과</summary><p>현재 로그인 동안의 과거 결과입니다. 같은 TEST·예측 입력에서 비교하세요. 로그아웃·새로고침 때 초기화됩니다.</p><div id="assignment-lab-history" class="table-wrap empty">학습·평가·예측 후 표시합니다.</div></details>
+
+{% if active=='mission' %}
+<dialog id="mission-csv-dialog" class="execution-dialog mission-csv-dialog" data-help-window aria-labelledby="mission-csv-title">
+  <div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="CSV 창 이동: 드래그 또는 방향키">
+    <div><h2 id="mission-csv-title">미션 CSV 데이터 조회</h2><p class="muted">배포 CSV 원본 · DB 테이블 생성 전에도 조회·다운로드할 수 있습니다.</p></div>
+    <div class="help-window-controls"><button type="button" class="secondary" data-window-action="minimize" aria-label="CSV 창 최소화">−</button><button type="button" class="secondary" data-window-action="maximize" aria-label="CSV 창 최대화" aria-pressed="false">□</button><button type="button" id="close-mission-csv" class="secondary dialog-close" aria-label="CSV 조회 닫기">×</button></div>
+  </div>
+  <div class="mission-csv-content">
+    <p id="mission-csv-description" class="sr-only"></p>
+    <section id="mission-csv-learning" class="mission-context" aria-label="미션 목적과 데이터 이해"></section>
+    <details class="workbench-detail"><summary>전체 컬럼 · 식별키·타깃·운영값 확인</summary>
+    <dl class="mission-variable-summary">
+      <div><dt>식별자 키</dt><dd id="mission-csv-key"></dd></div>
+      <div><dt>설명변수</dt><dd id="mission-csv-features"></dd></div>
+      <div><dt>타깃변수</dt><dd id="mission-csv-target"></dd></div>
+    </dl>
+    <p class="compact-note">식별자 키는 각 사례를 구분하며 모델 설명변수에서 제외합니다. SPLIT은 TRAIN/TEST 구분, USE_YN은 학습 사용 여부이며 설명변수가 아닙니다. 예측 CSV에는 정답 LABEL과 SPLIT·USE_YN이 없습니다.</p>
+    <div id="mission-csv-fields" class="table-wrap"></div>
+    </details>
+    <div class="mission-csv-toolbar">
+      <div class="help-switch" role="group" aria-label="CSV 종류"><button type="button" data-mission-csv-kind="training" aria-pressed="true">학습·TEST CSV</button><button type="button" data-mission-csv-kind="prediction" aria-pressed="false">예측 CSV</button></div>
+      <div class="mission-csv-filter"><label id="mission-csv-split-label">데이터 구분<select id="mission-csv-split"><option value="all">전체 TRAIN·TEST</option><option value="TRAIN">TRAIN 학습</option><option value="TEST">TEST 평가</option></select></label></div>
+      <a id="mission-csv-download" class="button secondary">전체 CSV 다운로드</a>
+      <button type="button" id="mission-csv-refresh" class="secondary">다시 조회</button>
+    </div>
+    <p id="mission-csv-status" class="execution-status" role="status" aria-live="polite"></p>
+    <ul class="mission-column-legend" aria-label="컬럼 역할 색상"><li data-column-role="identifier">식별키</li><li data-column-role="feature">설명변수</li><li data-column-role="target">타깃변수</li><li data-column-role="metadata">운영값 · 구분/사용 여부</li></ul>
+    <div id="mission-csv-rows" class="table-wrap mission-csv-rows" aria-label="CSV 원본 데이터"></div>
+    <nav class="mission-csv-pagination" aria-label="CSV 페이지"><button type="button" id="mission-csv-prev" class="secondary">이전</button><span id="mission-csv-page"></span><button type="button" id="mission-csv-next" class="secondary">다음</button></nav>
+    <p class="compact-note muted">50행씩 조회하며 다운로드는 현재 CSV 종류의 전체 원본입니다. 빈 값·unknown·범위 밖 숫자도 원본 그대로 표시합니다. 조회·다운로드는 DB 생성·적재·전처리를 수행하지 않습니다.</p>
+  </div>
+</dialog>
+{% endif %}
+
+{% if active=='mission' %}
+<dialog id="mission-schema-dialog" class="execution-dialog mission-schema-dialog" data-help-window aria-labelledby="mission-schema-title">
+  <div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="스키마 창 이동: 드래그 또는 방향키">
+    <div><h2 id="mission-schema-title">미션 테이블·프로시저 생성 안내</h2><p class="muted">선택 CSV에 맞춘 생성 참고안 · 실제 DB 정의 조회·생성은 수행하지 않습니다.</p></div>
+    <div class="help-window-controls"><button type="button" class="secondary" data-window-action="minimize" aria-label="스키마 창 최소화">−</button><button type="button" class="secondary" data-window-action="maximize" aria-label="스키마 창 최대화" aria-pressed="false">□</button><button type="button" id="close-mission-schema" class="secondary dialog-close" aria-label="스키마 조회 닫기">×</button></div>
+  </div>
+  <div class="mission-schema-content">
+    <aside class="mission-schema-start" aria-labelledby="mission-schema-start-title"><h3 id="mission-schema-start-title">객체 4개 · 직접 SQL 실행</h3><p>각 탭의 <strong>생성 SQL 전체 복사 → SQL Developer의 같은 계정에서 F5</strong> 실행. 모두 마치면 <strong>웹 새로고침으로 준비 상태를 자동 확인</strong>합니다. 별도 객체 연계는 필요 없습니다.</p></aside>
+    <p class="compact-note">1~3번 SQL은 대상 테이블을 삭제·재생성하여 기존 행이 삭제됩니다. 실행 대상을 확인하세요. 4번 SQL은 RUN을 등록합니다.</p>
+    <div class="help-switch mission-schema-switch" role="group" aria-label="미션 테이블·프로시저 생성 순서"><button type="button" data-mission-schema-kind="training" aria-pressed="true">1. 원본 DATA</button><button type="button" data-mission-schema-kind="prepared" aria-pressed="false">2. 전처리 PREPARED</button><button type="button" data-mission-schema-kind="prediction" aria-pressed="false">3. 예측 PREDICT</button><button type="button" data-mission-schema-kind="procedure" aria-pressed="false">4. 실행 프로시저 RUN</button></div>
+    <div class="object-line"><span id="mission-schema-object-label">테이블명</span><code id="mission-schema-table"></code></div>
+    <p id="mission-schema-description" class="execution-condition" role="status" aria-live="polite"></p>
+    <details id="mission-schema-ddl" class="workbench-detail" open><summary id="mission-schema-sql-title">CREATE TABLE·컬럼 설명 SQL 예시 · 직접 실행</summary><div class="actions"><button type="button" id="copy-mission-schema" class="secondary">생성 SQL 전체 복사</button><span id="mission-schema-copy-status" role="status"></span></div><pre id="mission-schema-code" class="code-block" tabindex="0" aria-label="선택 테이블 또는 RUN 프로시저 생성 SQL"></pre></details>
+    <div id="mission-schema-columns" class="table-wrap mission-schema-columns" aria-label="테이블 컬럼명과 Oracle 타입"></div>
+    <p id="mission-schema-constraints" class="compact-note"></p>
+    <aside id="mission-schema-table-guide" class="mission-schema-check" aria-labelledby="mission-schema-execution-title"><h3 id="mission-schema-execution-title">SQL Developer 실행 순서</h3><p>같은 DB 계정의 새 워크시트에 위 <b>선택 테이블 SQL 전체</b>를 붙여넣고, 글자 선택을 해제한 뒤 <kbd>F5</kbd>(스크립트 실행)를 누르세요. 출력에서 PL/SQL 블록과 <code>CREATE TABLE</code>의 성공 여부를 순서대로 확인합니다.</p><p><kbd>Ctrl+Enter</kbd>는 커서 위치의 한 문장만 실행합니다. 마지막 <code>COMMENT ON COLUMN</code>만 실행했고 테이블이 없으면 <code>ORA-00942</code>가 납니다. CREATE가 실패했다면 이후 COMMENT 오류보다 앞선 첫 오류를 먼저 확인하세요.</p><p>1. 원본 DATA → 2. 전처리 PREPARED → 3. 예측 PREDICT → 4. 실행 프로시저 RUN 순서로 탭별 SQL을 실행합니다. 각 SQL의 첫 PL/SQL 블록이 해당 테이블만 확인·삭제한 뒤 CREATE합니다. 기존 행은 삭제되며 ROLLBACK할 수 없습니다. 미션 변경 후에는 프로시저도 새 컬럼에 맞춰 다시 적용하고 CSV 적재·전처리·재학습을 진행하세요.</p></aside>
+    <aside id="mission-schema-procedure-guide" class="mission-schema-check" hidden><h3>RUN 프로시저 등록</h3><p>테이블 3개를 먼저 생성하고 위 전체 SQL을 <code>02_procedure.sql</code>로 저장하세요. 같은 발급 계정에서 <kbd>F5</kbd>로 실행한 뒤 웹을 새로고침하면 객체 준비가 자동 확인됩니다. 기존 RUN 정의는 새 정의로 교체됩니다.</p></aside>
+    <aside id="mission-schema-check-guide" class="mission-schema-check"><h3>CHECK (SPLIT IN ('TRAIN', 'TEST'))는?</h3><p><code>SPLIT</code>에 <code>TRAIN</code>(학습) 또는 <code>TEST</code>(평가)만 허용하는 입력 검사입니다. 다른 값은 INSERT·UPDATE 시 오류가 나며, 데이터를 자동으로 나누거나 학습을 실행하지 않습니다.</p><p><code>CHECK</code>만으로는 NULL을 막지 못합니다. 반드시 값을 입력하게 하려면 <code>NOT NULL</code>도 지정합니다. 생성 참고안은 원본 SPLIT에 두 규칙을 함께 사용합니다.</p><p><code>USE_YN</code>의 Y/N, <code>PREP_MODE</code>의 RAW/CLEAN도 같은 방식으로 허용값을 제한합니다.</p></aside>
+    <section id="mission-schema-learning" class="mission-context" aria-label="미션 목적과 데이터 이해"></section>
+  </div>
+</dialog>
+{% endif %}
+
+{% if active=='creative' %}
+<dialog id="assignment-schema-dialog" class="execution-dialog mission-schema-dialog" data-help-window aria-labelledby="assignment-schema-title">
+  <div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="스키마 창 이동: 드래그 또는 방향키">
+    <div><h2 id="assignment-schema-title">창의 미션 · 스키마 조회</h2><p class="muted">본인 DB 계정에 직접 생성한 실제 테이블 컬럼을 조회합니다.</p></div>
+    <div class="help-window-controls"><button type="button" class="secondary" data-window-action="minimize" aria-label="스키마 창 최소화">−</button><button type="button" class="secondary" data-window-action="maximize" aria-label="스키마 창 최대화" aria-pressed="false">□</button><button type="button" id="close-assignment-schema" class="secondary dialog-close" aria-label="스키마 조회 닫기">×</button></div>
+  </div>
+  <div class="mission-schema-content">
+    <div class="help-switch mission-schema-switch" role="group" aria-label="창의 스키마 테이블 종류"><button type="button" data-custom-schema-kind="training" aria-pressed="true">1. 원본 DATA</button><button type="button" data-custom-schema-kind="prepared" aria-pressed="false">2. 전처리 PREPARED</button><button type="button" data-custom-schema-kind="prediction" aria-pressed="false">3. 예측 PREDICT</button></div>
+    <div class="object-line"><span>테이블명</span><code id="assignment-schema-table"></code></div>
+    <p id="assignment-schema-status" class="execution-status" role="status" aria-live="polite"></p>
+    <div id="assignment-schema-columns" class="table-wrap mission-schema-columns"></div>
+    <p class="compact-note muted">창의과제는 예제 CSV·구현 답안을 제공하지 않습니다. 직접 설계한 테이블·RUN을 발급 계정에 생성하세요. 직접 수행 버튼은 RUN 호출·객체 정리 SQL을 열며, 실행 후 결과를 연계합니다.</p>
+  </div>
+</dialog>
+{% endif %}

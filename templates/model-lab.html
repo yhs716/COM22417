@@ -1,0 +1,73 @@
+{% from 'workflow-sections.html' import step_heading, sql_result_link %}
+{% macro mode_choice(id, name, prefix='', prediction=false, legend='') -%}
+<fieldset id="{{ id }}" class="mode-choice" data-mode-stage="{{ 'predictions' if prediction else 'data' if 'preparation' in id else 'models' }}" aria-describedby="{{ id }}-guide"><legend>{{ '두 모델 순서대로 예측·비교' if prediction else '두 방식 모두 완료 · ' + (legend or '모델 생성·TEST 평가') }}</legend>
+  <p id="{{ id }}-guide" class="mode-guide">① RAW → ② CLEAN 순서로 {{ '같은 입력의 예측 결과를 비교하세요.' if prediction else '각 작업을 완료하세요.' }} 작업 카드를 누르면 아래 실행 대상이 바뀝니다.</p>
+  {% for mode,label,rule in [('RAW','정제 미적용','범위 밖 숫자 유지'),('CLEAN','정제 적용','범위 밖 숫자 → NULL')] %}
+  <button type="button" class="mode-option" value="{{ mode }}" aria-pressed="{{ 'true' if loop.first else 'false' }}"><span class="mode-order" aria-hidden="true">{{ loop.index }}</span><span class="mode-body"><b>{{ mode }} · {{ label }}</b>{% if prediction %}<code{% if id=='prediction-model-select' %} id="prediction-choice-name-{{ mode }}"{% endif %}>{{ prefix }}_{{ mode }}_MODEL</code>{% else %}<small>{{ '본인이 작성한 전처리 규칙' if prefix=='OML_CREATIVE' else rule }}</small>{% endif %}<small class="mode-progress"{% if id=='prediction-model-select' %} id="prediction-choice-state-{{ mode }}"{% endif %}>{{ '현재 모델로 실행 결과 확인' if prediction else '완료 상태 확인 전' }}</small></span><span class="mode-current">{{ '현재 작업' if loop.first else '작업 열기' }}</span></button>
+  {% endfor %}
+</fieldset>
+{%- endmacro %}
+
+{% macro preparation_panel(custom=false, prefix='OML_BASIC', guides=true) -%}
+{% set group='assignment-preparation-mode' if custom else 'preparation-mode' %}
+{% set prepare='assignment-prepare' if custom else 'prepare-data' %}
+{% set query='assignment-prepared-data' if custom else 'query-prepared-data' %}
+<section class="preparation-workbench learning-workstep" data-learning-stage="prepared" aria-label="전처리 저장과 학습 제공 행">
+  {{ step_heading(3,'전처리 저장·결과 확인','원본 DATA를 유지하고 PREPARED에 모델 입력을 저장합니다.') }}
+  <div class="object-line"><span>모델 입력 테이블</span><code id="{{ 'assignment-prepared-target' if custom else 'prepared-target' }}">{{ prefix }}_PREPARED</code></div>
+  {{ mode_choice(group, group, prefix=prefix, legend='전처리 저장 방식') }}
+  {% if guides %}<p class="execution-condition">{{ '선택 미션 가이드: ' if custom and guides else '' }}<code>{{ prefix }}_DATA</code> → <code>INSERT … SELECT</code> → 선택한 방식의 TRAIN·TEST 저장. <strong>FIT_YN = Y</strong>인 TRAIN만 학습에 제공합니다.</p>{% else %}<p class="execution-condition">본인 프로시저에 구현한 전처리를 실행하여 모델 입력을 저장하고 학습 제공 여부를 확인합니다.</p>{% endif %}
+  <div class="execution-toolbar preparation-toolbar"><div class="actions">
+    <span class="action-with-help"><button type="button" id="{{ prepare }}"{% if custom %} data-manual-action="prepare" disabled{% endif %}>전처리 실행·저장{{ " · 직접 SQL" if custom else "" }}</button>{% if guides or custom %}<button type="button" class="secondary code-help" data-code="prepare" aria-label="전처리 INSERT SELECT 코딩도움말" aria-describedby="tip-{{ prepare }}">?</button><span class="code-help-tooltip" id="tip-{{ prepare }}" role="tooltip">별도 학습용 테이블에 저장하는 Oracle SQL</span>{% endif %}</span>
+    {% if custom %}<span class="action-with-help"><button type="button" id="assignment-clear-prepared" class="secondary danger" data-manual-action="clear-prepared" disabled>전처리값 비우기 · 직접 SQL</button>{% if guides or custom %}<button type="button" class="secondary code-help" data-code="clear-prepared" aria-label="전처리값 비우기 · 직접 SQL 코딩도움말">?</button>{% endif %}</span>{% else %}<span class="action-with-help"><button type="button" id="clear-prepared" class="secondary danger" data-basic-lifecycle="clear-prepared">선택 전처리값 비우기</button><button type="button" class="secondary code-help" data-code="clear-prepared" aria-label="선택 전처리값 비우기 코딩도움말">?</button></span>{% endif %}
+  </div></div>
+  <p class="execution-status" id="{{ 'assignment-prepared-status' if custom else 'prepared-status' }}">원본 적재 후 전처리를 실행하고 저장된 값을 확인하세요.</p>
+  <div class="workflow-query-block"><div class="workflow-query-bar"><h4>전처리 데이터 확인</h4><div class="query-controls" aria-label="전처리 저장값 조회 조건">
+    <label class="inline-filter">조회 조건 · 저장 구분<select id="{{ 'assignment-prepared-source-kind' if custom else 'prepared-source-kind' }}"><option value="TRAIN">TRAIN · 학습</option><option value="TEST">TEST · 평가</option><option value="PREDICT">PREDICT · 예측</option><option value="ALL">전체</option></select></label>
+    <span class="action-with-help"><button type="button" id="{{ query }}" class="secondary query-action">전처리 데이터 조회</button>{% if guides %}<button type="button" class="secondary code-help" data-code="prepared-data" aria-label="전처리 저장값 조회 코딩도움말" aria-describedby="tip-{{ query }}">?</button><span class="code-help-tooltip" id="tip-{{ query }}" role="tooltip">전처리 결과·학습 제공 여부 조회 SQL</span>{% endif %}</span>
+  </div></div>
+  {% if custom %}{{ sql_result_link('assignment-prepared-link') }}{% endif %}
+  <a class="workflow-next-link"{% if custom %} href="#" data-assignment-tab="models"{% else %} href="/basic#models" data-basic-tab="models"{% endif %}>다음 · 모델 생성·비교 →</a>
+
+  <p class="compact-note muted">헤더는 실제 컬럼명과 설명을 함께 표시합니다. 셀은 조회값 그대로 표시하며 NULL은 빈 셀입니다.</p>
+  <div class="table-wrap prepared-grid empty" id="{{ 'assignment-prepared-rows' if custom else 'prepared-data' }}">전처리 실행·저장 또는 저장값 조회를 누르세요.</div>
+  </div>
+  <p class="compact-note muted">학습 제외: SQL Developer에서 <code>FIT_YN = 'N'</code>·<code>EXCLUDE_REASON</code> 수정 → COMMIT. 전처리를 다시 실행하면 선택 방식의 준비값이 원본 기준으로 교체됩니다.</p>
+</section>
+{%- endmacro %}
+
+{% macro model_lab(custom=false, prefix='OML_BASIC', guides=true) -%}
+{% set mode_id='assignment-mode' if custom else 'model-lifecycle-mode' %}
+<div class="model-lab" aria-label="OML 모델 실습">
+  <div class="section-heading compact-heading"><h2>모델 생성·비교</h2><span class="mode-effect" id="{{ 'assignment-mode-effect' if custom else 'model-mode-effect' }}">별도 테이블의 전처리 저장값으로 학습</span></div>
+  <div class="lab-source"><span>모델 입력 테이블</span> <code>{{ prefix }}_PREPARED</code><span id="{{ 'assignment-model-training-count' if custom else 'model-training-count' }}" class="pill">학습 제공 행 확인 전</span></div>
+  {% if guides %}<div class="model-condition"><b>{{ '제공 예제 WHERE' if custom else '학습 WHERE' }}</b><code id="{{ 'assignment-training-condition' if custom else 'model-training-condition' }}">PREP_MODE = 'RAW' AND SOURCE_KIND = 'TRAIN' AND FIT_YN = 'Y'</code></div>{% endif %}
+  {{ mode_choice(mode_id, mode_id, prefix=prefix) }}
+  <div class="model-target compact-target" aria-live="polite"><div><span id="{{ 'assignment-model-label' if custom else 'model-lifecycle-label' }}" class="model-target-label">선택 모델</span><code id="{{ 'assignment-model-name' if custom else 'model-lifecycle-name' }}">{{ prefix }}_RAW_MODEL</code></div><p id="{{ 'assignment-model-state' if custom else 'model-lifecycle-state' }}">실제 DB 상태 확인 전</p></div>
+  <p class="execution-status" id="{{ 'assignment-model-preparation' if custom else 'model-preparation' }}">학습데이터 단계에서 선택 방식의 전처리값을 먼저 저장하세요.</p>
+  <a class="preparation-link"{% if custom %} href="#" data-assignment-tab="data"{% else %} href="/basic#data" data-basic-tab="data"{% endif %}>전처리·학습 제공 행 확인 →</a>
+  <div class="model-action-bar">
+    {% for key,button,operation,command in [
+      ('initial','최초 생성','initial-train','INIT · CREATE_MODEL2'),
+      ('retrain','전체 다시 학습','retrain','RETRAIN · DROP → CREATE'),
+      ('delete-model' if custom else 'delete','선택 모델 삭제','delete-model','DELETE · DROP_MODEL')
+    ] %}
+    <div class="model-action"><span class="action-with-help"><button type="button" id="{{ 'assignment' if custom else 'model' }}-{{ key }}"{% if custom %} data-manual-action="{{ operation }}" disabled{% endif %} aria-describedby="{{ 'assignment' if custom else 'model' }}-{{ key }}-status"{% if operation=='delete-model' %} class="danger secondary"{% endif %}>{{ button }}</button>{% if guides or custom %}<button type="button" class="secondary code-help" data-code="{{ operation }}" aria-label="{{ button }} Oracle OML 명령 보기" aria-describedby="tip-{{ mode_id }}-{{ key }}"><span aria-hidden="true">?</span></button><span class="code-help-tooltip" role="tooltip" id="tip-{{ mode_id }}-{{ key }}">실제 Oracle 명령·SELECT·SQL Developer 호출</span>{% endif %}</span><small id="{{ 'assignment' if custom else 'model' }}-{{ key }}-status">실제 DB 상태 확인 전</small></div>
+    {% endfor %}
+  </div>
+  {% if custom %}{{ sql_result_link('assignment-model-link') }}{% endif %}
+  <p class="execution-note">전체 다시 학습 = 저장된 FIT_YN=Y TRAIN 전체로 모델 재생성. 새 TRAIN은 적재·전처리 저장 후 실행하세요.</p>
+  {% if custom and guides %}<p class="execution-note">위 정제·학습 조건은 선택 미션 가이드 기준입니다. 본인 조건은 DB의 <code>{{ prefix }}_RUN</code>에서 구현·확인하세요.</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro model_learning(custom=false, guides=true) -%}
+{% if guides %}
+<details class="workbench-detail"><summary>실습 순서 · 정제 변경 / 데이터 추가 / 모델 정리</summary>
+  <ol class="lab-steps"><li><b>정제 전후 비교:</b> 학습데이터에서 RAW 전처리 저장 → RAW 최초 생성·TEST 평가 → CLEAN 전처리 저장 → CLEAN 최초 생성·같은 TEST 평가. 두 방식은 준비값과 모델을 따로 보관합니다.</li><li><b>정제 규칙 수정:</b> 프로시저의 CLEAN 전처리 INSERT SELECT를 수정하고 F5로 DB에 적용 → CLEAN 전처리 실행·저장 → 저장값 확인 → CLEAN 전체 다시 학습 → TEST·예측 비교.</li><li><b>학습 제공 행 수정:</b> PREPARED의 해당 방식·TRAIN 행에서 FIT_YN과 EXCLUDE_REASON을 직접 수정 → COMMIT → 전체 다시 학습. 모델은 저장된 학습 제공 행만 SELECT합니다. PREPARE를 다시 실행하면 수동 수정값도 원본 기준으로 교체됩니다.</li><li><b>학습 데이터 증가:</b> 원본에 새로운 CASE_ID의 Y/TRAIN 행을 INSERT → VALIDATE → COMMIT → 해당 방식 전처리 저장 → 전체 다시 학습. 2배·3배 증가도 저장된 전체 TRAIN을 재학습하며 기존 트리를 증분 갱신하지 않습니다.</li><li><b>모델 정리:</b> 선택 모델 삭제는 DBMS_DATA_MINING.DROP_MODEL을 호출합니다. 다른 모델·테이블·데이터는 유지합니다. DM$ 내부 객체를 직접 삭제하지 마세요.</li></ol>
+  <p>숫자 변환과 범위 검사는 PREPARED에 저장합니다. RAW/CLEAN 모두 변환 실패·빈 값은 NULL이며 CLEAN은 범위 밖 숫자도 NULL로 저장합니다. 학습 SELECT는 선택 방식·TRAIN·FIT_YN=Y만 읽습니다.</p>
+  <p>TEST·정답·예측 입력은 고정하고 모델만 바꿔 비교하세요. 정제나 학습 행 증가가 성능 향상을 보장하지 않습니다. 데이터 수정은 SQL Developer에서 직접 실행·COMMIT합니다.</p>
+  {% if custom %}<p>학생은 <code>02_procedure.sql</code>에서 실제 학습·평가·예측 조건을 직접 작성합니다. 선택 미션 가이드의 처리 기준을 수정하여 비교하세요.</p>{% endif %}
+</details>
+{% endif %}
+{%- endmacro %}

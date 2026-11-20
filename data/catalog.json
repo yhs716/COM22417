@@ -1,0 +1,1117 @@
+[
+  {
+    "key": "esports",
+    "title": "1. e스포츠 팀 경기력 등급",
+    "description": "전투·오브젝트 지표로 팀 경기력 5등급을 분류하는 가상 리그. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "esports.csv",
+    "prediction_filename": "esports_prediction.csv",
+    "columns": [
+      "case_id",
+      "team_score",
+      "objective_score",
+      "teamwork_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "team_score",
+        "korean_name": "팀 전투 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "교전 수행을 0~100으로 표현한 교육용 점수입니다. 킬 수 자체가 아닙니다.",
+        "low_meaning": "교전 수행이 약함",
+        "high_meaning": "교전 수행이 강함"
+      },
+      {
+        "name": "objective_score",
+        "korean_name": "오브젝트 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "거점·중립 오브젝트 확보를 점수화한 지표입니다. 획득 개수 자체가 아닙니다.",
+        "low_meaning": "목표 확보가 적음",
+        "high_meaning": "목표 확보가 활발함"
+      },
+      {
+        "name": "teamwork_score",
+        "korean_name": "협동 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "합류·역할 분담 등 팀 협동을 점수화한 지표입니다.",
+        "low_meaning": "협동이 부족함",
+        "high_meaning": "협동이 원활함"
+      },
+      {
+        "name": "label",
+        "korean_name": "경기력등급",
+        "role": "분류 타겟",
+        "valid": "D / C / B / A / S",
+        "meaning": "D → C → B → A → S 순으로 높은 경기력입니다. 실제 승률이나 선수 능력의 측정값은 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "baseline": {
+      "key": "esports",
+      "sha256": "f61d871fa199b73f7d665d7daa375936710123574681d07b38c4053de8fcc3cc",
+      "test_rows": 300,
+      "algorithm": "ALGO_DECISION_TREE",
+      "prep_auto": "ON",
+      "max_depth": 6,
+      "test_unchanged": true,
+      "min_percent_node": 10,
+      "raw_train_rows": 1200,
+      "clean_train_rows": 234,
+      "classes": 5,
+      "numeric_conversion": "숫자로 변환 불가능한 값과 빈 셀은 NULL, 범위 밖 숫자는 RAW에 유지",
+      "raw_correct": 96,
+      "raw_accuracy": 32.0,
+      "clean_correct": 143,
+      "clean_accuracy": 47.6667,
+      "control_correct": 177,
+      "control_accuracy": 59.0
+    },
+    "learning": {
+      "purpose": "팀의 세 가지 경기 지표로 새 경기의 경기력 등급을 분류하는 연습입니다.",
+      "use_case": "가상 리그에서 경기 리뷰 대상을 고르고 팀별 약점을 설명하는 상황에 활용합니다."
+    }
+  },
+  {
+    "key": "festival",
+    "title": "2. 캠퍼스 축제 혼잡도",
+    "description": "사전 반응·참여 의향으로 혼잡 5등급을 분류하는 가상 축제. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "festival.csv",
+    "prediction_filename": "festival_prediction.csv",
+    "columns": [
+      "case_id",
+      "interest_score",
+      "reservation_score",
+      "promotion_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "interest_score",
+        "korean_name": "관심 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "행사에 관심을 보인 반응의 강도를 점수화했습니다. 방문 인원수가 아닙니다.",
+        "low_meaning": "관심이 낮음",
+        "high_meaning": "관심이 높음"
+      },
+      {
+        "name": "reservation_score",
+        "korean_name": "사전 예약 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "사전 참여 예약·신청 수준을 점수화했습니다. 예약 건수 자체가 아닙니다.",
+        "low_meaning": "예약 반응이 적음",
+        "high_meaning": "예약 반응이 많음"
+      },
+      {
+        "name": "promotion_score",
+        "korean_name": "홍보 반응 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "홍보 노출 뒤 클릭·공유 등 반응을 점수화했습니다. 광고비가 아닙니다.",
+        "low_meaning": "홍보 반응이 약함",
+        "high_meaning": "홍보 반응이 강함"
+      },
+      {
+        "name": "label",
+        "korean_name": "혼잡등급",
+        "role": "분류 타겟",
+        "valid": "QUIET / LIGHT / NORMAL / BUSY / FULL",
+        "meaning": "QUIET → LIGHT → NORMAL → BUSY → FULL은 한산함에서 매우 혼잡함까지의 5등급입니다. 실제 인원수는 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "baseline": {
+      "key": "festival",
+      "sha256": "5fc46ff011348bc0cbe4d2cc74f4d22f2a0732985a06132e2b632ca47e16061b",
+      "test_rows": 300,
+      "algorithm": "ALGO_DECISION_TREE",
+      "prep_auto": "ON",
+      "max_depth": 6,
+      "test_unchanged": true,
+      "min_percent_node": 10,
+      "raw_train_rows": 1200,
+      "clean_train_rows": 263,
+      "classes": 5,
+      "numeric_conversion": "숫자로 변환 불가능한 값과 빈 셀은 NULL, 범위 밖 숫자는 RAW에 유지",
+      "raw_correct": 100,
+      "raw_accuracy": 33.3333,
+      "clean_correct": 141,
+      "clean_accuracy": 47.0,
+      "control_correct": 126,
+      "control_accuracy": 42.0
+    },
+    "learning": {
+      "purpose": "행사 시작 전에 수집한 반응으로 축제의 예상 혼잡 등급을 분류합니다.",
+      "use_case": "가상 캠퍼스 축제의 안내 인력·대기 공간을 어느 행사에 우선 배치할지 검토하는 연습입니다."
+    }
+  },
+  {
+    "key": "ott",
+    "title": "3. OTT 콘텐츠 예상 별점",
+    "description": "예고편·장르·리뷰 반응으로 예상 별점 1~5를 분류하는 가상 콘텐츠. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "ott.csv",
+    "prediction_filename": "ott_prediction.csv",
+    "columns": [
+      "case_id",
+      "trailer_score",
+      "genre_score",
+      "review_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "trailer_score",
+        "korean_name": "예고편 반응 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "예고편을 본 사람들의 관심·호응을 점수화한 지표입니다. 조회수 자체가 아닙니다.",
+        "low_meaning": "예고편 호응이 낮음",
+        "high_meaning": "예고편 호응이 높음"
+      },
+      {
+        "name": "genre_score",
+        "korean_name": "장르 선호 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "콘텐츠 장르와 가상 이용자 취향이 맞는 정도입니다. 장르 번호가 아닙니다.",
+        "low_meaning": "취향과 덜 맞음",
+        "high_meaning": "취향과 잘 맞음"
+      },
+      {
+        "name": "review_score",
+        "korean_name": "리뷰 반응 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "초기 소개·리뷰에 대한 긍정 반응을 점수화했습니다. 리뷰 개수 자체가 아닙니다.",
+        "low_meaning": "리뷰 반응이 부정적",
+        "high_meaning": "리뷰 반응이 긍정적"
+      },
+      {
+        "name": "label",
+        "korean_name": "예상별점",
+        "role": "분류 타겟",
+        "valid": "STAR1 / STAR2 / STAR3 / STAR4 / STAR5",
+        "meaning": "STAR1~STAR5는 예상 별점 1~5 등급입니다. 실제 이용자가 남긴 별점 평균을 그대로 담은 값은 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "baseline": {
+      "key": "ott",
+      "sha256": "4315d5deabc449cc5b004ff9c06de7562ee4b3b35c8898f22c0ad2ab9efbf8d8",
+      "test_rows": 300,
+      "algorithm": "ALGO_DECISION_TREE",
+      "prep_auto": "ON",
+      "max_depth": 6,
+      "test_unchanged": true,
+      "min_percent_node": 10,
+      "raw_train_rows": 1200,
+      "clean_train_rows": 249,
+      "classes": 5,
+      "numeric_conversion": "숫자로 변환 불가능한 값과 빈 셀은 NULL, 범위 밖 숫자는 RAW에 유지",
+      "raw_correct": 112,
+      "raw_accuracy": 37.3333,
+      "clean_correct": 148,
+      "clean_accuracy": 49.3333,
+      "control_correct": 169,
+      "control_accuracy": 56.3333
+    },
+    "learning": {
+      "purpose": "공개 전 콘텐츠 반응을 설명변수로 사용해 예상 별점 등급을 분류합니다.",
+      "use_case": "가상 OTT 서비스에서 콘텐츠 반응을 비교하고 소개 순서를 검토하는 연습입니다."
+    }
+  },
+  {
+    "key": "resale",
+    "title": "4. 중고거래 판매 속도",
+    "description": "가격 매력·상품 상태·관심으로 판매 속도 5등급을 분류하는 가상 거래. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "resale.csv",
+    "prediction_filename": "resale_prediction.csv",
+    "columns": [
+      "case_id",
+      "price_score",
+      "condition_score",
+      "demand_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "price_score",
+        "korean_name": "가격 매력 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "유사 상품 대비 가격의 매력도를 점수화했습니다. 판매 가격이나 할인율 자체가 아닙니다.",
+        "low_meaning": "가격 매력이 낮음",
+        "high_meaning": "가격 매력이 높음"
+      },
+      {
+        "name": "condition_score",
+        "korean_name": "상품 상태 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "외관·작동 상태의 양호함을 점수화했습니다.",
+        "low_meaning": "상품 상태가 나쁨",
+        "high_meaning": "상품 상태가 좋음"
+      },
+      {
+        "name": "demand_score",
+        "korean_name": "관심 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "가상 구매자의 관심·문의 수준을 점수화했습니다. 문의 건수 자체가 아닙니다.",
+        "low_meaning": "구매 관심이 적음",
+        "high_meaning": "구매 관심이 많음"
+      },
+      {
+        "name": "label",
+        "korean_name": "판매속도등급",
+        "role": "분류 타겟",
+        "valid": "VERY_SLOW / SLOW / NORMAL / FAST / VERY_FAST",
+        "meaning": "VERY_SLOW → SLOW → NORMAL → FAST → VERY_FAST는 느린 판매에서 빠른 판매 순서입니다. 실제 판매 일수는 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "baseline": {
+      "key": "resale",
+      "sha256": "3c8d0a65c432a1bce14de758ff3737b6627ab0e78ab129cb947be4dbfc54823c",
+      "test_rows": 300,
+      "algorithm": "ALGO_DECISION_TREE",
+      "prep_auto": "ON",
+      "max_depth": 6,
+      "test_unchanged": true,
+      "min_percent_node": 10,
+      "raw_train_rows": 1200,
+      "clean_train_rows": 235,
+      "classes": 5,
+      "numeric_conversion": "숫자로 변환 불가능한 값과 빈 셀은 NULL, 범위 밖 숫자는 RAW에 유지",
+      "raw_correct": 105,
+      "raw_accuracy": 35.0,
+      "clean_correct": 130,
+      "clean_accuracy": 43.3333,
+      "control_correct": 142,
+      "control_accuracy": 47.3333
+    },
+    "learning": {
+      "purpose": "중고 상품의 세 가지 특성으로 판매 속도 등급을 분류합니다.",
+      "use_case": "가상 중고거래 목록에서 오래 남을 상품을 찾고 가격·상품 설명을 점검하는 연습입니다."
+    }
+  },
+  {
+    "key": "space",
+    "title": "5. 우주 탐사 후보 등급",
+    "description": "세 가지 가상 탐사 지표로 탐사 후보 5등급을 분류하는 교육 시뮬레이션. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "space.csv",
+    "prediction_filename": "space_prediction.csv",
+    "columns": [
+      "case_id",
+      "spectrum_score",
+      "density_score",
+      "orbit_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "spectrum_score",
+        "korean_name": "스펙트럼 지표",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "가상의 목표 스펙트럼과 맞는 정도입니다. 실제 파장이나 분광 측정값이 아닙니다.",
+        "low_meaning": "가상 목표와 덜 유사함",
+        "high_meaning": "가상 목표와 더 유사함"
+      },
+      {
+        "name": "density_score",
+        "korean_name": "밀도 지표",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "가상 탐사 조건에 맞는 밀도 특성의 적합도입니다. 실제 질량밀도 값이 아닙니다.",
+        "low_meaning": "설정한 조건과 덜 맞음",
+        "high_meaning": "설정한 조건과 잘 맞음"
+      },
+      {
+        "name": "orbit_score",
+        "korean_name": "궤도 지표",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "관측·접근에 유리한 궤도 조건의 가상 적합도입니다. 실제 궤도 반지름이 아닙니다.",
+        "low_meaning": "접근 조건이 불리함",
+        "high_meaning": "접근 조건이 유리함"
+      },
+      {
+        "name": "label",
+        "korean_name": "탐사후보등급",
+        "role": "분류 타겟",
+        "valid": "GRADE1 / GRADE2 / GRADE3 / GRADE4 / GRADE5",
+        "meaning": "GRADE1~GRADE5는 낮은 우선순위에서 높은 우선순위입니다. 실제 천체의 생명 가능성 판정이 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "baseline": {
+      "key": "space",
+      "sha256": "9c25f652bd1b89b88224734ac54917b4b20e3d8313b92d5bb8bb933daeb8a214",
+      "test_rows": 300,
+      "algorithm": "ALGO_DECISION_TREE",
+      "prep_auto": "ON",
+      "max_depth": 6,
+      "test_unchanged": true,
+      "min_percent_node": 10,
+      "raw_train_rows": 1200,
+      "clean_train_rows": 246,
+      "classes": 5,
+      "numeric_conversion": "숫자로 변환 불가능한 값과 빈 셀은 NULL, 범위 밖 숫자는 RAW에 유지",
+      "raw_correct": 87,
+      "raw_accuracy": 29.0,
+      "clean_correct": 113,
+      "clean_accuracy": 37.6667,
+      "control_correct": 158,
+      "control_accuracy": 52.6667
+    },
+    "learning": {
+      "purpose": "가상 관측 지표를 사용해 탐사 후보의 우선순위 등급을 분류합니다.",
+      "use_case": "교육 시뮬레이션에서 탐사 후보를 비교하고 선택 이유를 설명하는 연습입니다."
+    }
+  },
+  {
+    "key": "wifi",
+    "title": "6. 캠퍼스 Wi-Fi 품질 등급",
+    "description": "신호·여유 용량·연결 안정 점수로 Wi-Fi 품질 5등급을 분류하는 가상 네트워크. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "wifi.csv",
+    "prediction_filename": "wifi_prediction.csv",
+    "columns": [
+      "case_id",
+      "signal_score",
+      "capacity_score",
+      "stability_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "signal_score",
+        "korean_name": "신호 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "수신 신호의 양호함을 0~100으로 변환한 지수입니다. 음수 dBm 측정값을 직접 넣는 칼럼이 아닙니다.",
+        "low_meaning": "수신이 약함",
+        "high_meaning": "수신이 양호함"
+      },
+      {
+        "name": "capacity_score",
+        "korean_name": "여유 용량 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "추가 사용자를 수용할 여유를 점수화했습니다. 사용 중인 비율이 아니므로 높을수록 여유롭습니다.",
+        "low_meaning": "남은 용량이 적음",
+        "high_meaning": "남은 용량이 많음"
+      },
+      {
+        "name": "stability_score",
+        "korean_name": "연결 안정 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "연결 끊김이 적고 유지가 잘되는 정도입니다. 끊김 횟수 자체가 아닙니다.",
+        "low_meaning": "연결이 불안정함",
+        "high_meaning": "연결이 안정적임"
+      },
+      {
+        "name": "label",
+        "korean_name": "Wi-Fi 품질등급",
+        "role": "분류 타겟",
+        "valid": "VERY_POOR / POOR / FAIR / GOOD / EXCELLENT",
+        "meaning": "VERY_POOR → POOR → FAIR → GOOD → EXCELLENT는 매우 낮은 품질에서 높은 품질 순서입니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "csv_sha256": "a96e23f4187b1cbad08bd901bab8b8252e0a3bbd8a15ce98209d0942599b5cdc",
+    "learning": {
+      "purpose": "네트워크의 세 가지 상태 점수로 Wi-Fi 품질 등급을 분류합니다.",
+      "use_case": "가상 캠퍼스에서 품질 점검이 필요한 구역의 우선순위를 정하는 연습입니다."
+    }
+  },
+  {
+    "key": "bike",
+    "title": "7. 공유 자전거 이용 수요",
+    "description": "날씨 쾌적도·접근성·주변 활동 점수로 이용 수요 5등급을 분류하는 가상 대여소. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "bike.csv",
+    "prediction_filename": "bike_prediction.csv",
+    "columns": [
+      "case_id",
+      "weather_score",
+      "accessibility_score",
+      "activity_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "weather_score",
+        "korean_name": "날씨 쾌적 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "자전거를 타기 쾌적한 날씨의 정도입니다. 섭씨 온도나 강수량 자체가 아닙니다.",
+        "low_meaning": "이용에 덜 쾌적함",
+        "high_meaning": "이용에 더 쾌적함"
+      },
+      {
+        "name": "accessibility_score",
+        "korean_name": "접근성 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "대여소에 쉽게 접근할 수 있는 정도입니다. 실제 거리(m)가 아닙니다.",
+        "low_meaning": "접근하기 어려움",
+        "high_meaning": "접근하기 쉬움"
+      },
+      {
+        "name": "activity_score",
+        "korean_name": "주변 활동 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "주변 통학·상업·여가 활동의 활발함입니다. 통행 인원수 자체가 아닙니다.",
+        "low_meaning": "주변 활동이 적음",
+        "high_meaning": "주변 활동이 많음"
+      },
+      {
+        "name": "label",
+        "korean_name": "이용수요등급",
+        "role": "분류 타겟",
+        "valid": "VERY_LOW / LOW / NORMAL / HIGH / VERY_HIGH",
+        "meaning": "VERY_LOW → LOW → NORMAL → HIGH → VERY_HIGH는 낮은 수요에서 높은 수요 순서입니다. 실제 대여 건수는 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "csv_sha256": "f1477fba3d8059fe1371122bb0f7c1f4f6f5c277b460484701edd30c8382694e",
+    "learning": {
+      "purpose": "대여소 주변 조건으로 공유 자전거 이용 수요 등급을 분류합니다.",
+      "use_case": "가상 대여소의 자전거 재배치 우선순위를 비교하는 연습입니다."
+    }
+  },
+  {
+    "key": "maker",
+    "title": "8. 메이커 작품 완성도",
+    "description": "설계·기능·마감 점수로 작품 완성도 5단계를 분류하는 가상 제작 실습. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "maker.csv",
+    "prediction_filename": "maker_prediction.csv",
+    "columns": [
+      "case_id",
+      "design_score",
+      "function_score",
+      "finish_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "design_score",
+        "korean_name": "설계 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "목표·구조·도면이 정리된 정도를 점수화했습니다.",
+        "low_meaning": "설계가 덜 구체적임",
+        "high_meaning": "설계가 구체적임"
+      },
+      {
+        "name": "function_score",
+        "korean_name": "기능 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "목표 기능이 구현되고 작동하는 정도입니다. 기능 개수 자체가 아닙니다.",
+        "low_meaning": "작동 구현이 부족함",
+        "high_meaning": "작동 구현이 충분함"
+      },
+      {
+        "name": "finish_score",
+        "korean_name": "마감 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "조립·외관·마무리 상태의 양호함입니다.",
+        "low_meaning": "마감 보완이 많음",
+        "high_meaning": "마감이 양호함"
+      },
+      {
+        "name": "label",
+        "korean_name": "작품완성도",
+        "role": "분류 타겟",
+        "valid": "CONCEPT / INITIAL / BASIC / ADVANCED / COMPLETE",
+        "meaning": "CONCEPT → INITIAL → BASIC → ADVANCED → COMPLETE는 구상에서 높은 완성도까지의 단계입니다. 실제 과제 점수는 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "csv_sha256": "5f8992ac7f41633527a3ae57c4ded1c46d1db532e38ae1056328cfb7e463735f",
+    "learning": {
+      "purpose": "제작물의 설계·기능·마감 상태로 완성도 단계를 분류합니다.",
+      "use_case": "가상 메이커 실습에서 작품의 보완 항목과 다음 점검 순서를 설명하는 연습입니다."
+    }
+  },
+  {
+    "key": "package",
+    "title": "9. 재활용 포장 적합도",
+    "description": "재활용성·분리 용이성·청결 점수로 포장 적합도 5등급을 분류하는 가상 분류 실습. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "package.csv",
+    "prediction_filename": "package_prediction.csv",
+    "columns": [
+      "case_id",
+      "recyclability_score",
+      "separation_score",
+      "cleanliness_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "recyclability_score",
+        "korean_name": "재활용성 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "포장 재질 구성의 재활용 적합성을 점수화했습니다. 재질의 고유 코드가 아닙니다.",
+        "low_meaning": "재활용에 불리한 구성",
+        "high_meaning": "재활용에 유리한 구성"
+      },
+      {
+        "name": "separation_score",
+        "korean_name": "분리 용이성 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "여러 재질·부속을 쉽게 분리할 수 있는 정도입니다.",
+        "low_meaning": "분리하기 어려움",
+        "high_meaning": "분리하기 쉬움"
+      },
+      {
+        "name": "cleanliness_score",
+        "korean_name": "청결 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "내용물·오염이 적은 청결 상태를 점수화했습니다. 오염률 자체가 아닙니다.",
+        "low_meaning": "오염이 많음",
+        "high_meaning": "오염이 적음"
+      },
+      {
+        "name": "label",
+        "korean_name": "재활용적합도",
+        "role": "분류 타겟",
+        "valid": "VERY_LOW / LOW / NORMAL / HIGH / VERY_HIGH",
+        "meaning": "VERY_LOW → LOW → NORMAL → HIGH → VERY_HIGH는 낮은 적합도에서 높은 적합도입니다. 실제 분리배출 규정의 판정값은 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "csv_sha256": "256c64e8306c5ed0e3e5d2f59cdb6a7c75a630561432bec8732f71b12a2544a6",
+    "learning": {
+      "purpose": "포장 상태의 세 가지 점수로 재활용 적합도 등급을 분류합니다.",
+      "use_case": "가상 포장 검수에서 세척·재질 분리 등 보완이 필요한 사례를 설명하는 연습입니다."
+    }
+  },
+  {
+    "key": "greenhouse",
+    "title": "10. 스마트 온실 환경 등급",
+    "description": "온도·수분·광량 적합 점수로 환경 5등급을 분류하는 가상 온실. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "greenhouse.csv",
+    "prediction_filename": "greenhouse_prediction.csv",
+    "columns": [
+      "case_id",
+      "temperature_score",
+      "moisture_score",
+      "light_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "temperature_score",
+        "korean_name": "온도 적합 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "목표 온도 범위에 맞는 정도입니다. 실제 온도(℃)가 아니며 100은 매우 더운 상태를 뜻하지 않습니다.",
+        "low_meaning": "목표 범위에서 벗어남",
+        "high_meaning": "목표 범위에 잘 맞음"
+      },
+      {
+        "name": "moisture_score",
+        "korean_name": "수분 적합 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "목표 수분 조건에 맞는 정도입니다. 실제 습도(%)나 토양 수분량이 아닙니다.",
+        "low_meaning": "목표 수분과 덜 맞음",
+        "high_meaning": "목표 수분과 잘 맞음"
+      },
+      {
+        "name": "light_score",
+        "korean_name": "광량 적합 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "목표 광량에 맞는 정도입니다. 실제 조도(lux)를 직접 넣는 칼럼이 아닙니다.",
+        "low_meaning": "목표 광량과 덜 맞음",
+        "high_meaning": "목표 광량과 잘 맞음"
+      },
+      {
+        "name": "label",
+        "korean_name": "환경적합등급",
+        "role": "분류 타겟",
+        "valid": "VERY_POOR / POOR / FAIR / GOOD / EXCELLENT",
+        "meaning": "VERY_POOR → POOR → FAIR → GOOD → EXCELLENT는 낮은 적합도에서 높은 적합도 순서입니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "csv_sha256": "8696b5f8dd7a590d041d682d1f68043dc1051b48ba3461fb98ab7c1ad3190de8",
+    "learning": {
+      "purpose": "온실 환경의 적합 점수로 재배 환경 등급을 분류합니다.",
+      "use_case": "가상 온실에서 점검할 환경 요소를 고르고 조정 전후 조건을 비교하는 연습입니다."
+    }
+  },
+  {
+    "key": "delivery",
+    "title": "11. 온라인 주문 배송 소요 등급",
+    "description": "거리·교통 혼잡·처리 부하 점수로 배송 소요 5등급을 분류하는 가상 주문. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "delivery.csv",
+    "prediction_filename": "delivery_prediction.csv",
+    "columns": [
+      "case_id",
+      "distance_score",
+      "congestion_score",
+      "load_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "learning": {
+      "purpose": "주문 처리 조건으로 배송 소요 등급을 분류하는 연습입니다.",
+      "use_case": "가상 쇼핑몰에서 배송 안내 범주를 정하고 지연 점검 대상 주문을 찾는 상황에 활용합니다."
+    },
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "distance_score",
+        "korean_name": "배송 거리 부담 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "배송 거리로 인한 부담을 점수화했습니다. 실제 거리(km)가 아닙니다.",
+        "low_meaning": "거리 부담이 적음",
+        "high_meaning": "거리 부담이 큼"
+      },
+      {
+        "name": "congestion_score",
+        "korean_name": "교통 혼잡 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "배송 구간의 교통 혼잡 수준입니다. 평균 속도(km/h)가 아니며 높을수록 혼잡합니다.",
+        "low_meaning": "교통이 원활함",
+        "high_meaning": "교통이 혼잡함"
+      },
+      {
+        "name": "load_score",
+        "korean_name": "처리 부하 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "분류·포장·출고 작업의 처리 부담입니다. 처리 완료율이 아니며 높을수록 일이 몰린 상태입니다.",
+        "low_meaning": "처리 부하가 적음",
+        "high_meaning": "처리 부하가 큼"
+      },
+      {
+        "name": "label",
+        "korean_name": "배송소요등급",
+        "role": "분류 타겟",
+        "valid": "VERY_FAST / FAST / NORMAL / SLOW / VERY_SLOW",
+        "meaning": "VERY_FAST → FAST → NORMAL → SLOW → VERY_SLOW는 짧은 소요에서 긴 소요 순서입니다. 실제 분·시간 값은 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "csv_sha256": "4a5fee0a292d02569aac9d1caf0bffa38cca45da11addb73d7b0aeda24f5af45"
+  },
+  {
+    "key": "appux",
+    "title": "12. 모바일 앱 사용성 등급",
+    "description": "탐색 편의·응답 체감·접근성 점수로 사용성 5등급을 분류하는 가상 앱. 합성 데이터이며 실제 인과관계·성능을 보장하지 않습니다.",
+    "filename": "appux.csv",
+    "prediction_filename": "appux_prediction.csv",
+    "columns": [
+      "case_id",
+      "navigation_score",
+      "response_score",
+      "accessibility_score",
+      "label",
+      "split",
+      "use_yn"
+    ],
+    "learning": {
+      "purpose": "화면 사용 경험의 세 가지 점수로 앱 사용성 등급을 분류합니다.",
+      "use_case": "가상 앱의 화면·버전별 사용 경험을 비교하고 개선할 항목을 설명하는 연습입니다."
+    },
+    "rows": 1500,
+    "issues": [
+      "결측값",
+      "숫자 대신 문자열",
+      "범위 밖 수치"
+    ],
+    "layout": [
+      {
+        "name": "case_id",
+        "korean_name": "사례번호",
+        "role": "사례 식별 키",
+        "valid": "중복 없는 양의 정수",
+        "meaning": "각 사례를 구분하는 키입니다. 모델 설명변수에서 제외합니다."
+      },
+      {
+        "name": "navigation_score",
+        "korean_name": "탐색 편의 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "메뉴·화면에서 원하는 기능을 찾기 쉬운 정도입니다. 클릭 횟수 자체가 아닙니다.",
+        "low_meaning": "기능을 찾기 어려움",
+        "high_meaning": "기능을 찾기 쉬움"
+      },
+      {
+        "name": "response_score",
+        "korean_name": "응답 체감 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "반응을 빠르고 원활하게 느끼는 정도입니다. 지연시간(ms)이 아니며 높을수록 좋습니다.",
+        "low_meaning": "응답 체감이 답답함",
+        "high_meaning": "응답 체감이 원활함"
+      },
+      {
+        "name": "accessibility_score",
+        "korean_name": "접근성 점수",
+        "role": "모델 설명변수",
+        "valid": "숫자 0~100, 단위 없음",
+        "meaning": "글자·대비·조작 방식이 이용을 돕는 정도입니다. 실제 접근성 인증 여부가 아닙니다.",
+        "low_meaning": "사용 지원이 부족함",
+        "high_meaning": "사용 지원이 충분함"
+      },
+      {
+        "name": "label",
+        "korean_name": "사용성등급",
+        "role": "분류 타겟",
+        "valid": "VERY_POOR / POOR / FAIR / GOOD / EXCELLENT",
+        "meaning": "VERY_POOR → POOR → FAIR → GOOD → EXCELLENT는 낮은 사용성에서 높은 사용성 순서입니다. 실제 이용자 만족도 조사 결과는 아닙니다."
+      },
+      {
+        "name": "split",
+        "korean_name": "데이터구분",
+        "role": "미리 고정한 학습·평가 구분",
+        "valid": "TRAIN 1200 / TEST 300",
+        "meaning": "미리 고정한 TRAIN은 학습, TEST는 평가에 사용하며 TEST 원본은 바꾸지 않습니다."
+      },
+      {
+        "name": "use_yn",
+        "korean_name": "사용여부",
+        "role": "학습 사용 여부",
+        "valid": "Y / N · TEST는 원본 유지",
+        "meaning": "원본의 학습 사용 여부입니다. 실제 전처리 후 학습 제공 여부는 PREPARED의 FIT_YN으로 확인합니다."
+      }
+    ],
+    "task": "새 테이블·적재·조회·전처리·모델·평가·예측 프로시저를 만들고 Python에서 호출하세요. TEST 300행은 변경하지 않습니다.",
+    "csv_sha256": "d019d816d4653bfab0d1676fbb1fc926d6efe3eba743705f59893f901e3a5d47"
+  }
+]

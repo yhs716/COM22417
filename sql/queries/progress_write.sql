@@ -1,0 +1,30 @@
+-- 호출자의 미커밋 실습 행은 COMMIT하지 않습니다. 버전 충돌은 갱신 0건입니다.
+DECLARE
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  IF SYS_CONTEXT('USERENV', 'SESSION_USER') <> SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') THEN
+    RAISE_APPLICATION_ERROR(-20030, '발급 계정과 CURRENT_SCHEMA가 다릅니다.');
+  END IF;
+  :written := 0;
+  IF :revision = 0 THEN
+    BEGIN
+      INSERT INTO OML_WEB_STATE (STATE_KEY, REVISION, STATE_JSON)
+      VALUES (:state_key, 1, :payload);
+      :written := 1;
+    EXCEPTION WHEN DUP_VAL_ON_INDEX THEN NULL;
+    END;
+  ELSE
+    UPDATE OML_WEB_STATE
+       SET STATE_JSON = :payload
+         , REVISION = REVISION + 1
+         , UPDATED_AT = SYSTIMESTAMP
+     WHERE STATE_KEY = :state_key
+       AND REVISION = :revision;
+    :written := SQL%ROWCOUNT;
+  END IF;
+  COMMIT;
+EXCEPTION WHEN OTHERS THEN
+  ROLLBACK;
+  RAISE;
+END;
+/

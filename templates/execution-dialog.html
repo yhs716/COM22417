@@ -1,0 +1,37 @@
+<dialog id="execution-dialog" class="execution-dialog" data-help-window aria-labelledby="execution-title">
+  <div id="execution-drag" class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="팝업 이동: 드래그 또는 방향키">
+    <div><h2 id="execution-title">코딩도움말</h2></div>
+    <div class="help-window-controls"><button type="button" class="secondary" data-window-action="minimize" aria-label="코딩도움말 최소화" title="최소화">−</button><button type="button" class="secondary" data-window-action="maximize" aria-label="도움말 최대화" title="최대화" aria-pressed="false">□</button><button type="button" id="close-execution" class="secondary" aria-label="코딩도움말 닫기" title="닫기">×</button></div>
+  </div>
+  <p id="execution-manual-note" class="execution-status" role="status" hidden></p>
+  <section class="coding-flow-workspace" aria-labelledby="execution-flow-title" aria-busy="false">
+    <div class="coding-flow-heading"><h3 id="execution-flow-title">버튼에서 SQL까지 · 호출 흐름</h3><div class="coding-flow-context"><span id="execution-mode" class="coding-flow-mode"></span><p id="execution-context"></p></div></div>
+    <p id="execution-flow-status" class="coding-flow-status" role="status"></p>
+    <div id="execution-flow" class="coding-flow" role="group" aria-label="호출 흐름 단계"></div>
+    <div class="coding-source-workbench">
+    <aside id="execution-stage-detail" class="coding-stage-detail" hidden>
+      <p class="coding-explorer-label">소스 탐색기</p>
+      <div class="coding-stage-heading"><h3 id="execution-stage-title"></h3><span id="execution-stage-count"></span></div>
+      <p id="execution-stage-summary"></p>
+      <div id="execution-items" class="coding-flow-items" role="group" aria-label="선택 단계의 파일과 소스 구간"></div>
+      <p id="execution-stage-empty" class="coding-stage-empty" hidden></p>
+    </aside>
+  <section id="execution-source-panel" class="coding-source-panel" aria-labelledby="execution-code-title" hidden>
+    <div class="coding-source-heading"><div><span id="execution-source-kind" class="coding-source-kind"></span><h3 id="execution-code-title"></h3></div><button type="button" id="copy-execution" class="secondary">선택 구간 복사</button><button type="button" id="copy-execution-file" class="secondary">파일 전체 복사</button></div>
+    <p id="execution-code-source" class="source-location"></p>
+    <p id="execution-code-role" class="source-role"></p>
+    <pre id="execution-code" class="execution-code" tabindex="0" aria-label="선택한 소스 코드"></pre>
+    <p id="execution-copy-state" role="status"></p>
+  </section>
+    </div>
+  </section>
+  <details id="execution-apply" class="coding-apply" hidden>
+    <summary id="execution-apply-title">수정 후 적용 방법</summary>
+    <div class="coding-apply-intro"><p id="execution-apply-summary"></p><span id="execution-apply-owner" class="coding-apply-owner" hidden></span></div>
+    <ol id="execution-apply-steps" class="coding-apply-steps"></ol>
+    <p id="execution-warning" class="coding-apply-caution" hidden></p>
+    <div id="execution-apply-details"></div>
+    <details id="execution-apply-command" class="coding-apply-detail" hidden><summary id="execution-command-title">터미널로 적용하기</summary><p id="execution-command-note"></p><pre class="code-block"><code></code></pre></details>
+    <div id="execution-verify-code"></div>
+  </details>
+</dialog>

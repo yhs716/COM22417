@@ -1,0 +1,7 @@
+{% macro object_names(prefix, objects, editable=false) -%}
+<div class="assignment-connection-fields object-name-fields">
+  {% for field,label,hint in [('training_table','원본 데이터','CSV 원본 TRAIN·TEST 보관'),('prepared_table','모델 입력','전처리 저장값·FIT_YN 관리'),('prediction_table','예측 입력','새 입력 CSV 원본 보관'),('procedure_name','실행 프로시저','전처리·학습·평가·예측 실행')] %}
+  <label for="{{ prefix }}-{{ field }}">{{ label }}<input id="{{ prefix }}-{{ field }}" name="{{ field }}" {% if editable %}required pattern="[A-Za-z][A-Za-z0-9_]*"{% else %}readonly aria-readonly="true"{% endif %} spellcheck="false" autocomplete="off" value="{{ objects[field] }}" aria-describedby="{{ prefix }}-{{ field }}-hint"><small id="{{ prefix }}-{{ field }}-hint">{{ hint }}</small></label>
+  {% endfor %}
+</div>
+{%- endmacro %}

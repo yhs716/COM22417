@@ -1,0 +1,38 @@
+<!-- 기본 고정 데이터: 미션과 같은 CSV·스키마 조회 구조, 생성·실행은 기본 화면 버튼에서 수행합니다. -->
+<dialog id="basic-csv-dialog" class="execution-dialog mission-csv-dialog" data-help-window aria-labelledby="basic-csv-title">
+  <div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="데이터 창 이동: 드래그 또는 방향키">
+    <div><h2 id="basic-csv-title">기본 미션 · CSV 데이터 조회</h2><p class="muted">배포 CSV 원문 · DB 테이블 생성 전에도 조회·다운로드할 수 있습니다.</p></div>
+    <div class="help-window-controls"><button type="button" class="secondary" data-window-action="minimize" aria-label="데이터 창 최소화">−</button><button type="button" class="secondary" data-window-action="maximize" aria-label="데이터 창 최대화" aria-pressed="false">□</button><button type="button" id="close-basic-csv" class="secondary dialog-close" aria-label="데이터 조회 닫기">×</button></div>
+  </div>
+  <div class="mission-csv-content">
+    <p class="muted">UCI Dow Jones Index · 2011년 주식 시세의 다음 주 BUY·SELL 분류입니다. 학습·TEST 원본 720행에는 학습·평가에서 제외하는 경계 주 30행이 포함됩니다.</p>
+    <dl class="mission-variable-summary"><div><dt>식별자 키</dt><dd>CASE_ID · 사례번호</dd></div><div><dt>설명변수</dt><dd>RETURN_PCT · RANGE_PCT · VOLUME_CHANGE_PCT · CLOSE_PRICE · STOCK</dd></div><div><dt>타깃변수</dt><dd>SIGNAL · BUY / SELL</dd></div></dl>
+    <p class="compact-note">WEEK_ENDING·SPLIT·USE_YN은 모델 설명변수가 아닙니다. 예측 CSV의 SIGNAL은 빈 셀로 제공되며 정답을 모델 입력에 사용하지 않습니다.</p>
+    <div class="mission-csv-toolbar">
+      <div class="help-switch" role="group" aria-label="기본 CSV 종류"><button type="button" data-basic-csv-kind="training" aria-pressed="true">학습·TEST CSV</button><button type="button" data-basic-csv-kind="prediction" aria-pressed="false">예측 CSV</button></div>
+      <div class="mission-csv-filter"><label id="basic-csv-split-label">데이터 구분<select id="basic-csv-split"><option value="all">전체 TRAIN·TEST</option><option value="TRAIN">TRAIN · 경계 주 N 포함</option><option value="TEST">TEST 평가</option></select></label></div>
+      <a id="basic-csv-download" class="button secondary" href="/download/sample.csv">전체 CSV 다운로드</a><button type="button" id="basic-csv-refresh" class="secondary">다시 조회</button>
+    </div>
+    <p id="basic-csv-status" class="execution-status" role="status" aria-live="polite"></p>
+    <ul class="mission-column-legend" aria-label="컬럼 역할 색상"><li data-column-role="identifier">식별키</li><li data-column-role="feature">설명변수</li><li data-column-role="target">타깃변수</li><li data-column-role="metadata">운영값</li></ul>
+    <div id="basic-csv-rows" class="table-wrap mission-csv-rows" aria-label="기본 CSV 원본 데이터"></div>
+    <nav class="mission-csv-pagination" aria-label="기본 CSV 페이지"><button type="button" id="basic-csv-prev" class="secondary">이전</button><span id="basic-csv-page"></span><button type="button" id="basic-csv-next" class="secondary">다음</button></nav>
+    <p class="compact-note muted">50행씩 조회하며 다운로드는 선택한 종류의 전체 원본입니다. 빈 값·unknown·범위 밖 숫자도 원문 그대로 표시합니다. 조회·다운로드는 DB 생성·적재·전처리를 수행하지 않습니다.</p>
+  </div>
+</dialog>
+<dialog id="basic-schema-dialog" class="execution-dialog mission-schema-dialog" data-help-window aria-labelledby="basic-schema-title">
+  <div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="스키마 창 이동: 드래그 또는 방향키">
+    <div><h2 id="basic-schema-title">기본 미션 · 스키마 조회</h2><p class="muted">기본과제에 배포된 테이블 정의입니다. DB 생성·삭제를 실행하지 않습니다.</p></div>
+    <div class="help-window-controls"><button type="button" class="secondary" data-window-action="minimize" aria-label="스키마 창 최소화">−</button><button type="button" class="secondary" data-window-action="maximize" aria-label="스키마 창 최대화" aria-pressed="false">□</button><button type="button" id="close-basic-schema" class="secondary dialog-close" aria-label="스키마 조회 닫기">×</button></div>
+  </div>
+  <div class="mission-schema-content">
+    <p class="compact-note">기본과제는 SQL을 직접 수정하지 않고 화면에서 준비·적재·학습·예측을 실행합니다. 아래 정의로 원본과 전처리 저장·예측 입력의 차이를 확인하세요.</p>
+    <div class="help-switch mission-schema-switch" role="group" aria-label="기본 스키마 테이블 종류"><button type="button" data-basic-schema-kind="training" aria-pressed="true">1. 원본 DATA</button><button type="button" data-basic-schema-kind="prepared" aria-pressed="false">2. 전처리 PREPARED</button><button type="button" data-basic-schema-kind="prediction" aria-pressed="false">3. 예측 PREDICT</button></div>
+    <div class="object-line"><span>테이블명</span><code id="basic-schema-table"></code></div>
+    <p id="basic-schema-description" class="execution-condition" role="status" aria-live="polite"></p>
+    <div id="basic-schema-columns" class="table-wrap mission-schema-columns" aria-label="기본 테이블 컬럼명과 Oracle 타입"></div>
+    <p id="basic-schema-constraints" class="compact-note"></p>
+    <details id="basic-schema-ddl" class="workbench-detail"><summary>CREATE TABLE · 테이블·컬럼 설명 SQL</summary><p id="basic-schema-source" class="compact-note"></p><div class="actions"><button type="button" id="copy-basic-schema" class="secondary">생성·코멘트 SQL 전체 복사</button><span id="basic-schema-copy-status" role="status"></span></div><pre id="basic-schema-code" class="code-block" tabindex="0" aria-label="기본 테이블 배포 정의"></pre></details>
+    <aside class="mission-schema-check"><h3>나의 DB 오브젝트 생성 계정</h3><p>테이블·프로시저는 로그인 시 발급받은 DB 계정을 소유자로 표시합니다. SQL Developer에서도 본인 계정으로 접속하고 <code>발급DB계정.오브젝트명</code>을 확인하세요. 다른 계정에서 본인 과제 이름만 사용해 실행하지 않습니다.</p></aside>
+  </div>
+</dialog>

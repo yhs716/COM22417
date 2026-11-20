@@ -1,0 +1,24 @@
+{% macro dataset_overview(assignment='basic') -%}
+<section class="panel compact-workbench mission-examples dataset-overview" aria-label="{{ '기본과제 고정 데이터' if assignment=='basic' else '창의과제 직접 설계 데이터' }}">
+  <div class="section-heading compact-heading"><h2>{{ '기본 미션 · 고정 데이터' if assignment=='basic' else '창의 미션 · 직접 설계 데이터' }}</h2><span class="muted">{{ '화면에서 준비·적재·실행' if assignment=='basic' else '직접 작성·실행 후 화면 연계' }}</span></div>
+  <div class="mission-example-grid">
+    <article class="mission-example-card selected">
+      <h3>{{ '주간 매매 신호 분류' if assignment=='basic' else '나의 분류 문제' }}</h3>
+      {% if assignment=='basic' %}
+      <p>2011년 주식 시세로 다음 주 BUY·SELL을 분류합니다. TRAIN 330행 · TEST 360행 · 경계 주 제외 30행 · 별도 예측 30행입니다.</p>
+      <div class="mission-card-buttons"><span class="pill">고정 미션</span><button type="button" class="secondary" data-basic-preview aria-haspopup="dialog">데이터 조회</button><button type="button" class="secondary" data-basic-schema aria-haspopup="dialog">스키마 조회</button></div>
+      <div class="mission-card-downloads"><a href="/download/sample.csv">학습·TEST CSV</a><a href="/download/prediction.csv">예측 CSV</a></div>
+      {% else %}
+      <p>데이터·컬럼·정답과 전처리·학습·평가·예측을 직접 설계합니다. 본인 DB 계정에 오브젝트를 만들고 연결 상태와 실제 결과를 확인하세요.</p>
+      <div class="mission-card-buttons"><span class="pill">직접 설계</span><button type="button" class="secondary" data-custom-preview>데이터 조회</button><button type="button" class="secondary" data-custom-schema aria-haspopup="dialog">스키마 조회</button></div>
+      {% endif %}
+    </article>
+  </div>
+  {% if assignment=='basic' %}
+  <dl class="mission-variable-summary"><div><dt>식별자 키</dt><dd>CASE_ID · 사례번호</dd></div><div><dt>설명변수</dt><dd>RETURN_PCT · RANGE_PCT · VOLUME_CHANGE_PCT · CLOSE_PRICE · STOCK</dd></div><div><dt>타깃변수</dt><dd>SIGNAL · 매매신호(BUY / SELL)</dd></div></dl>
+  <p class="compact-note muted">조회·다운로드는 배포 CSV 원문을 읽습니다. 테이블·프로시저 준비 → 기본 데이터 적재 → 전처리 저장 → 모델 학습 → 평가·예측을 화면에서 실행할 수 있습니다.</p>
+  {% else %}
+  <p class="compact-note muted">제공 SQL은 없습니다. 직접 작성한 SQL 파일을 수정·실행한 뒤 화면에서 본인 테이블·프로시저·모델을 연결하세요. 원본 사례는 TRAIN·TEST·예측 합계 10,000건 이하입니다.</p>
+  {% endif %}
+</section>
+{%- endmacro %}

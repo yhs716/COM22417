@@ -1,0 +1,49 @@
+<div class="main-hub">
+  <section id="main-login" class="main-login-card" aria-labelledby="identity-title" hidden>
+    <aside class="main-login-intro" aria-label="실습 공간 안내">
+      <div class="main-login-brand"><span class="main-login-wordmark" aria-hidden="true">oml<span>.</span></span><span>Oracle Machine Learning</span></div>
+      <div class="main-login-welcome"><p class="main-login-term">배재대학교 · 2026년 2학기</p><h2>나의 데이터로, <br>배우는 머신러닝.</h2><p>발급받은 계정으로 접속하고<br>데이터부터 예측까지 직접 실습하세요.</p></div>
+      <ol class="main-login-steps" aria-label="실습 시작 순서"><li><span>01</span>학번·이름 확인</li><li><span>02</span>발급 DB 계정 연결</li><li><span>03</span>나의 실습 시작</li></ol>
+      <p class="main-login-course">소프트웨어학 · 빅데이터머신러닝<br><span>COM22417 · Python × Oracle ML</span></p>
+    </aside>
+    <div class="main-login-form">
+      <header class="main-login-heading"><p class="eyebrow">YOUR WORKSPACE</p><h2 id="identity-title">로그인</h2><p>학번·이름과 발급받은 DB 비밀번호를 입력하세요.{% if environment_db_password %} 서버 비밀번호와 일치해야 합니다.{% endif %}</p></header>
+      <form id="identity-form">
+        <div class="login-fields">
+          <label for="login-id">학번<input id="login-id" required autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+          <label for="login-name">이름<input id="login-name" required autocomplete="name"></label>
+          <label for="login-db-user">발급 DB 계정<input id="login-db-user" readonly tabindex="-1" placeholder="학번·이름 확인 후 표시" aria-live="polite"></label>
+          <label for="login-password">DB 비밀번호<input id="login-password" type="password" required autocomplete="current-password"{% if environment_db_password %} data-remember-password="false"{% endif %}></label>
+        </div>
+        <div class="main-login-remember"><label class="remember-input"><input id="remember-identity" type="checkbox"><span>입력값 저장</span></label><p class="remember-note">{% if environment_db_password %}선택하면 학번·이름만 이 브라우저에 저장합니다.{% else %}선택하면 학번·이름·DB 비밀번호를 이 브라우저에 저장합니다.{% endif %}</p></div>
+        <p id="identity-error" class="inline-error" role="alert" hidden></p>
+        <section id="connection-check" class="connection-check" role="status" aria-live="polite" hidden></section>
+        <div class="main-login-actions"><button type="button" class="secondary" id="cancel-identity">돌아가기</button><button type="button" class="secondary" id="test-connection">DB 연결 테스트</button><button type="submit" id="login-submit">로그인 <span aria-hidden="true">→</span></button></div>
+      </form>
+    </div>
+  </section>
+  <section id="main-account" class="main-account-card" aria-labelledby="main-account-title" hidden>
+    <header class="main-card-heading"><h2 id="main-account-title">로그인 정보</h2><span class="main-login-badge"><i aria-hidden="true"></i> 로그인 완료</span></header>
+    <div class="main-person"><div><p class="main-person-label">실습 참여자</p><h3><span id="main-person-name">—</span><small> 님</small></h3></div><dl><div><dt>학번</dt><dd id="main-person-id">—</dd></div><div><dt>학과</dt><dd id="main-person-department">—</dd></div><div><dt>학년</dt><dd id="main-person-grade">—</dd></div></dl></div>
+    <div class="main-connection-heading"><div><h3><svg class="icon" aria-hidden="true"><use href="#icon-data"/></svg> 실제 DB 연결 확인</h3><p id="main-connection-message" role="status" aria-live="polite">접속 정보를 조회하고 있습니다.</p></div><button type="button" class="secondary" id="main-test-connection"><svg class="icon" aria-hidden="true"><use href="#icon-refresh"/></svg> 연결 다시 테스트</button></div>
+    <dl class="main-connection-grid">
+      <div class="main-owner"><dt>발급 DB 계정 · 오브젝트 소유자</dt><dd id="main-db-owner">—</dd></div>
+      <div class="main-session"><dt>실제 접속 계정 / 현재 스키마</dt><dd id="main-db-session">—</dd></div>
+      <div><dt>접속 서비스 별칭 (DB_DSN)</dt><dd id="main-db-alias">—</dd></div>
+      <div class="main-web"><dt>웹 접속 주소</dt><dd id="main-web-address">—</dd></div>
+      <div class="main-service"><dt>Oracle 실제 서비스명</dt><dd id="main-db-service">—</dd></div>
+      <div><dt>DB 이름</dt><dd id="main-db-name">—</dd></div>
+      <div><dt>DB 서버 호스트</dt><dd id="main-db-host">—</dd></div>
+      <div><dt>DB 인스턴스</dt><dd id="main-db-instance">—</dd></div>
+      <div><dt>로그인 시각</dt><dd id="main-login-time">—</dd></div>
+      <div class="main-check-time"><dt>연결 확인 시각 · 검사 시간</dt><dd id="main-checked-time">—</dd></div>
+    </dl>
+    <div class="main-verification"><p class="main-verification-label">연결 테스트 결과</p><ul id="main-connection-checks" aria-label="연결 테스트 결과"></ul><p id="main-db-privileges"></p></div>
+    <p class="main-capture-note"><span class="main-capture-label">제출 방법</span><span>제출 방법은 좌측 메뉴 하단의 「과제 설명 및 평가」를 확인하세요.</span></p>
+  </section>
+  <nav id="main-task-links" class="main-task-links" aria-label="과제 시작" hidden>
+    <a href="/basic"><span class="main-task-number">01</span><div><span class="main-task-name">기본과제</span><strong>고정 데이터로 시작</strong><small>화면에서 준비·학습·예측</small></div><b aria-hidden="true">↗</b></a>
+    <a href="/mission"><span class="main-task-number">02</span><div><span class="main-task-name">미션과제</span><strong>예시 12종 중 선택</strong><small>제공 SQL 직접 실행 후 연계</small></div><b aria-hidden="true">↗</b></a>
+    <a href="/creative"><span class="main-task-number">03</span><div><span class="main-task-name">창의과제</span><strong>나만의 문제 설계</strong><small>데이터·SQL 직접 작성 후 연계</small></div><b aria-hidden="true">↗</b></a>
+  </nav>
+</div>

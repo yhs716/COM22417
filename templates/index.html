@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>{{ title }} · OML Studio</title>
+<link rel="stylesheet" href="/static/css/style.css?v=20261120-concise-help-v1">
+<link rel="stylesheet" href="/static/css/studio.css?v=20261120-schema-entry-v1">
+<link rel="stylesheet" href="/static/css/intro.css?v=20261119-paichai-v1">
+<script src="/static/js/code-highlight.js?v=20261119-coding-flow-v1" defer></script>
+<script src="/static/js/help-window.js?v=20261119-workspace-design-v2" defer></script>
+<script src="/static/js/layer-message.js?v=20261118-guidance-v4" defer></script>
+<script src="/static/js/request-progress.js?v=20261119-feedback-v1" defer></script>
+<script src="/static/js/main.js?v=20261120-work-sequence-v1" defer></script>
+{% if active=='main' %}<link rel="stylesheet" href="/static/css/main-page.css?v=20261119-main-width-v1"><script src="/static/js/main-page.js?v=20261119-main-login-v1" defer></script>{% endif %}
+{% if is_basic %}<script src="/static/js/basic-dataset.js?v=20261119-csv-stable-view-v1" defer></script>{% endif %}
+{% if is_basic or is_assignment %}<script src="/static/js/practice-evidence.js?v=20261120-object-ready-v1" defer></script>{% endif %}
+<script src="/static/js/execution-dialog.js?v=20261120-work-sequence-v1" defer></script>
+{% if active=='mission' %}<script src="/static/js/mission-learning.js?v=20261119-missions12-v1" defer></script>{% endif %}
+{% if is_assignment %}<script src="/static/js/assignment-template.js?v=20261120-object-ready-v1" defer></script>{% endif %}
+{% if active=='mission' %}<script src="/static/js/mission-schema.js?v=20261120-schema-entry-v1" defer></script>{% endif %}
+</head>
+<body data-ui="research-desk" data-auth="checking" data-page="{{ active }}" data-basic="{{ 'true' if is_basic else 'false' }}">
+<section id="auth-check" class="auth-check" aria-label="화면 준비"><div><strong class="auth-check-brand">oml<span>.</span></strong><p id="auth-check-message" role="status">로그인 상태를 확인하고 있습니다.</p><div class="loading-track" role="progressbar" aria-label="화면 준비 중"><span></span></div><button type="button" id="auth-check-retry" class="secondary" hidden>다시 확인</button></div></section>
+{% include "login-gate.html" %}
+<a class="skip" href="#main">본문으로 이동</a>
+<svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="icon-data" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></symbol>
+  <symbol id="icon-model" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="6" rx="2"/><path d="M12 8v5M5 17v-4h14v4"/><rect x="2" y="17" width="6" height="5" rx="1"/><rect x="16" y="17" width="6" height="5" rx="1"/></symbol>
+  <symbol id="icon-predict" viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-13h-8z"/></symbol>
+  <symbol id="icon-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="icon-menu" viewBox="0 0 24 24"><path d="M3 5h18M3 12h18M3 19h18"/></symbol>
+  <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+  <symbol id="icon-code" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18"/></symbol>
+  <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M20 8a8 8 0 1 0 0 8M20 3v6h-6"/></symbol>
+  <symbol id="icon-spark" viewBox="0 0 24 24"><path d="m12 2 2.3 7.7L22 12l-7.7 2.3L12 22l-2.3-7.7L2 12l7.7-2.3Z"/></symbol>
+</defs></svg>
+<aside class="sidebar" hidden inert aria-label="과제 탐색">
+  <a class="brand" href="/" aria-label="OML Studio 메인"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><span class="brand-name">oml<span>.</span><small>학습 스튜디오</small></span></a>
+  <div class="course-tag"><span>배재대학교 · 소프트웨어학</span><strong>빅데이터 머신러닝</strong><small>2026년 2학기 · COM22417</small></div>
+  <p class="nav-label">실습 공간</p>
+  <nav aria-label="주 메뉴">
+  <a href="/" {% if active=='main' %}class="active" aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#icon-grid"/></svg><span class="nav-name">메인</span></a>
+  {% for key,path,label in navigation %}
+    <a href="{{ path }}" {% if key=='basic' %}data-basic-tab="home"{% endif %} {% if active==key or (is_basic and key=='basic') %}class="active" aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#icon-{{ 'grid' if key=='basic' else 'spark' if key=='creative' else 'model' }}"/></svg><span class="nav-name">{{ label }}</span><span class="nav-index">{{ basic_points if key=='basic' else assignments[key].points }}점</span></a>
+  {% endfor %}
+  </nav>
+  <div class="sidebar-bottom"><a id="instructor-lecture-link" class="sidebar-help resource-menu-link instructor-menu-link" data-instructor-lecture target="_blank" rel="noopener" hidden><span>강사용 OML 교재</span><span aria-hidden="true">↗</span></a><a id="assignment-guide-link" class="sidebar-help resource-menu-link" href="/download/assignment-guide.html" target="_blank" rel="noopener"><span>과제 설명 및 평가</span><span aria-hidden="true">↗</span></a><div class="account"><span class="account-avatar" aria-hidden="true">L</span><div><strong id="account-name">로그인 전</strong><span id="account-id">작업 계정</span></div><button id="account-button" aria-label="로그인">›</button></div></div>
+</aside>
+<div class="workspace" hidden inert>
+<header class="topbar"><div class="topbar-left"><button id="open-menu" class="icon-button" type="button" aria-label="메뉴 열기" aria-controls="mobile-menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#icon-menu"/></svg></button><span class="course-brand"><b>빅데이터 머신러닝</b><span class="course-name">Python × Oracle ML</span></span></div><div class="tools"><span id="connection" class="pill">로그인 필요</span><div class="font-tools" role="group" aria-label="본문 글자 크기"><button id="font-minus" aria-label="글자 작게">가−</button><output id="font-size">16</output><button id="font-plus" aria-label="글자 크게">가+</button></div><button id="top-login">로그인</button><span id="session-tools" class="session-tools" hidden><span>남은 시간 <output id="session-remaining" aria-label="로그인 세션 남은 시간">30:00</output></span><button type="button" id="extend-session">시간 연장</button></span><button id="logout" hidden>로그아웃</button></div></header>
+<main id="main">
+  <ol class="course-path" aria-label="과목 위치"><li>배재대학교</li><li>소프트웨어학</li><li>빅데이터머신러닝</li><li>2026년 2학기</li></ol>
+  <div class="page-heading"><div><div class="page-title"><h1>{{ title }}</h1>{% if active!='main' %}<span class="assignment-score"><span>배점</span><b>{{ basic_points if is_basic else assignments[active].points if is_assignment else basic_points }}</b><span>점</span></span>{% endif %}</div><p class="page-subtitle">{{ '나의 실습 접속 정보 · 로그인 계정과 실제 DB 연결 상태를 확인하세요.' if active=='main' else '주식 매수·매도 신호 분류' if is_basic else '본인 DB 로직과 연결하는 실습 공간' }}</p></div><div class="actions"><span class="action-with-help"><button id="refresh" class="secondary" aria-label="새로고침" title="현재 상태 새로고침"><svg class="icon" aria-hidden="true"><use href="#icon-refresh"/></svg><span class="refresh-label">새로고침</span></button>{% if active not in ['creative','main'] %}<button type="button" class="secondary code-help" data-code="{{ 'connection' if is_assignment else 'status' }}" aria-label="현재 상태 조회 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-23" title="현재 상태 조회 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-23" class="code-help-tooltip" role="tooltip">현재 상태 조회 코드 보기</span>{% endif %}</span></div></div>
+  {% if is_assignment %}{% include "pages/assignment-template.html" %}{% elif is_basic %}{% include "pages/basic.html" %}{% else %}{% include "pages/" ~ active ~ ".html" %}{% endif %}
+  <footer><span>OML STUDIO · 데이터로 생각하는 연습</span><span>COM22417 · Python × Oracle ML</span></footer>
+</main></div>
+<dialog id="mobile-menu" aria-labelledby="mobile-menu-title"><div class="dialog-top"><h2 id="mobile-menu-title">실습 공간</h2><button type="button" class="secondary dialog-close" id="close-menu" aria-label="메뉴 닫기">×</button></div><nav aria-label="모바일 주 메뉴"><a href="/" {% if active=='main' %}aria-current="page"{% endif %}>메인</a>{% for key,path,label in navigation %}<a href="{{ path }}" {% if key=='basic' %}data-basic-tab="home"{% endif %} {% if active==key or (is_basic and key=='basic') %}aria-current="page"{% endif %}>{{ label }}<span>{{ basic_points if key=='basic' else assignments[key].points }}점</span></a>{% endfor %}</nav><a id="mobile-instructor-lecture-link" class="button secondary resource-menu-link instructor-menu-link" data-instructor-lecture target="_blank" rel="noopener" hidden>강사용 OML 교재 <span aria-hidden="true">↗</span></a><a id="mobile-assignment-guide-link" class="button secondary resource-menu-link" href="/download/assignment-guide.html" target="_blank" rel="noopener">과제 설명 및 평가 <span aria-hidden="true">↗</span></a><button type="button" class="secondary" id="mobile-account">로그인</button></dialog>
+<dialog id="help-dialog" data-help-window aria-labelledby="help-title">
+  <div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="팝업 이동: 드래그 또는 방향키"><div><h2 id="help-title">관련 소스</h2><p class="muted">제목 드래그 · 방향키 이동 · 최소화 후 하단에서 복원</p></div><div class="help-window-controls"><button type="button" class="secondary" data-window-action="minimize" aria-label="관련 소스 최소화" title="최소화">−</button><button type="button" class="secondary" data-window-action="maximize" aria-label="도움말 최대화" title="최대화" aria-pressed="false">□</button><button type="button" id="close-help" class="secondary dialog-close" aria-label="관련 소스 닫기" title="닫기">×</button></div></div>
+  <section id="source-view">
+    <div class="section-heading"><div><h3 id="source-path"></h3><p class="muted" id="source-location"></p></div><div class="actions"><button id="copy-source-path" class="secondary">경로 복사</button></div></div>
+    <p class="muted">VS Code <kbd>Ctrl+P</kbd> → 경로 입력 · <kbd>Ctrl+G</kbd> → 줄 번호 입력</p>
+    <pre id="source-code" tabindex="0" aria-label="공개 소스 코드"></pre>
+  </section>
+</dialog>
+{% if is_basic or is_assignment %}
+<dialog id="practice-detail-dialog" class="practice-detail-dialog" data-movable-window aria-labelledby="practice-detail-title">
+  <div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="실습 현황 상세 이동: 제목 드래그 또는 방향키">
+    <h2 id="practice-detail-title">실습 세부 작업</h2><button type="button" id="close-practice-detail" class="secondary dialog-close" aria-label="실습 세부 작업 닫기">×</button>
+  </div>
+  <div class="practice-detail-body"><p id="practice-detail-summary" class="practice-detail-summary" role="status"></p><div id="practice-detail-groups"></div><a id="practice-detail-go" class="button secondary" href="#" hidden>이 단계로 이동</a></div>
+</dialog>
+{% endif %}
+{% include "execution-dialog.html" %}
+<dialog id="message-dialog" data-movable-window aria-labelledby="message-title"><div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="메시지 이동: 제목 드래그 또는 방향키"><h2 id="message-title">작업 안내</h2><button type="button" id="close-message" class="secondary dialog-close" aria-label="작업 안내 닫기">×</button></div><div id="notice" role="status" class="message-content" hidden></div></dialog>
+<dialog id="confirm-dialog" class="layer-message" data-movable-window aria-labelledby="confirm-title" aria-describedby="confirm-description">
+  <div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="확인 메시지 이동: 제목 드래그 또는 방향키"><div><h2 id="confirm-title">작업 확인</h2><p class="muted">제목 드래그 · 방향키 이동 · ESC 취소</p></div><button type="button" id="close-confirm" class="secondary" aria-label="확인 메시지 닫기">×</button></div>
+  <div id="confirm-description" class="layer-message-body"></div>
+  <div class="layer-message-actions"><button type="button" id="cancel-confirm" class="secondary">취소</button><button type="button" id="accept-confirm">확인</button></div>
+</dialog>
+<dialog id="session-expired-dialog" class="layer-message" data-movable-window aria-labelledby="session-expired-title" aria-describedby="session-expired-description"><div class="dialog-top execution-drag" data-window-drag tabindex="0" aria-label="세션 안내 이동: 제목 드래그 또는 방향키"><h2 id="session-expired-title">로그인 세션 만료</h2></div><div id="session-expired-description" class="layer-message-body">일정 시간 동안 이용하지 않아 로그인 세션이 만료되었습니다. 로그인 화면으로 이동합니다. 다시 로그인해 주세요.</div><div class="layer-message-actions"><button type="button" id="session-expired-accept">확인 · 로그인 화면으로 이동</button></div></dialog>
+<aside popover="manual" id="request-progress" class="request-progress" hidden aria-live="polite" role="status"><strong id="request-progress-label">작업 처리 중입니다.</strong><div class="loading-track" role="progressbar" aria-label="작업 처리 중"><span></span></div><small>완료될 때까지 잠시 기다려 주세요.</small></aside>
+<aside popover="manual" id="operation-status" class="operation-status" hidden role="status" aria-live="polite"><span id="operation-status-text" tabindex="0" title="드래그 또는 방향키로 메시지 이동"></span><div class="actions"><button type="button" id="operation-status-detail" class="secondary">자세히 보기</button><button type="button" id="operation-status-close" class="secondary" aria-label="작업 알림 닫기">×</button></div></aside>
+</body></html>

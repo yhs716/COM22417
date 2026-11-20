@@ -1,0 +1,12 @@
+-- [MODEL-DICTIONARY] 모델 등록 정보. 크기는 MB, 학습 소요 시간은 초입니다.
+SELECT MODEL_NAME
+     , MINING_FUNCTION
+     , ALGORITHM
+     , CREATION_DATE
+     , BUILD_DURATION
+     , MODEL_SIZE
+     , PARTITIONED
+     , COMMENTS
+  FROM USER_MINING_MODELS
+ WHERE MODEL_NAME = :model_name
+;

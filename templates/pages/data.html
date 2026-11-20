@@ -1,0 +1,53 @@
+{% from 'workflow-sections.html' import data_flow, step_heading %}
+<!-- data: title, table/conditions, actions, result; teaching details follow the result. -->
+<section class="panel data-workbench">
+  <div class="section-heading"><h2>학습 데이터 · 원본 적재와 전처리</h2><span class="muted">CSV 적재·전처리·학습을 화면에서 실행</span></div>
+  <div class="dataset-context"><strong>기본 미션 · 주간 매매 신호 분류</strong><div class="actions"><button type="button" class="secondary" data-basic-preview aria-haspopup="dialog">CSV 데이터 조회</button><button type="button" class="secondary" data-basic-schema aria-haspopup="dialog">스키마 조회</button><a class="button secondary" href="/download/sample.csv">학습·TEST CSV</a></div></div>
+  {{ data_flow() }}
+  <section class="learning-workstep" data-learning-stage="csv">
+  {{ step_heading(1,'학습 CSV 적재','CSV 원본을 DATA 테이블에 저장합니다.') }}
+  <div class="object-line"><span>원본 TRAIN·TEST</span><code>{{ basic_objects.training_table }}</code><span id="storage-state" class="pill">확인 대기</span></div>
+  <form id="import-form"><div class="csv-upload"><label for="data-file">학습 CSV</label><div class="upload-choice-row"><input id="data-file" type="file" accept=".csv,text/csv"><button id="choose-sample" type="button" class="secondary">기본 데이터 선택</button></div><div class="upload-footer"><span id="selected-filename" class="muted">선택한 CSV가 없습니다.</span><div class="actions"><span class="action-with-help"><button id="preview" type="button" class="secondary">미리보기</button><button type="button" class="secondary code-help" data-code="preview" aria-label="CSV 미리보기 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-2" title="CSV 미리보기 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-2" class="code-help-tooltip" role="tooltip">CSV 미리보기 코드 보기</span></span><span class="action-with-help"><button type="submit" id="import-submit">CSV 최초 적재</button><button type="button" class="secondary code-help" data-code="import" aria-label="학습 CSV 적재 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-3" title="학습 CSV 적재 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-3" class="code-help-tooltip" role="tooltip">학습 CSV 적재 코드 보기</span></span><button type="submit" id="replace-training" class="secondary">CSV 교체 적재</button></div></div></div></form><div class="reset-actions"><span class="action-with-help"><button type="button" id="clear-training" class="secondary danger" data-basic-lifecycle="clear-training">학습 데이터 비우기</button><button type="button" class="secondary code-help" data-code="clear-training" aria-label="학습 데이터 비우기 코딩도움말">?</button></span><small>원본·전처리값 삭제 · 테이블 유지</small></div>
+  <p id="data-action-status" class="execution-status control-status" role="status">로그인 후 원본 테이블의 상태를 확인합니다.</p>
+  <div id="preview-box" hidden><p class="quality" id="quality-summary"></p><div class="table-wrap" id="preview-table"></div></div>
+  </section>
+  <details class="learning-workstep original-data-step" id="original-data-detail" data-learning-stage="original" open><summary>{{ step_heading(2,'원본 데이터 확인','DATA에 적재된 값을 먼저 확인합니다.') }}</summary>
+  <div class="toolbar data-query-toolbar">
+    <div class="data-filters"><label>사용 여부<select id="filter-use"><option value="ALL">전체</option><option value="Y">사용 (Y)</option><option value="N">미사용 (N)</option></select></label><label>구분<select id="filter-split"><option value="ALL">전체</option><option value="TRAIN">TRAIN · 학습</option><option value="TEST">TEST · 평가</option></select></label></div>
+    <span id="row-count" class="muted">—</span><div class="actions"><span class="action-with-help"><button id="query-data" type="button" class="secondary query-action">원본 데이터 조회</button><button type="button" class="secondary code-help" data-code="data" aria-label="데이터 조회 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-5" title="데이터 조회 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-5" class="code-help-tooltip" role="tooltip">데이터 조회 코드 보기</span></span></div>
+  </div>
+  <p class="muted" id="data-quality">USE_YN=Y인 TRAIN으로 학습하고 TEST로 평가합니다.</p>
+  <div id="data-table" class="table-wrap empty">적재된 데이터가 없습니다.</div>
+  <p class="muted compact-note">데이터 수정: SQL Developer에서 직접 수정 → COMMIT → 위의 조회.</p>
+  </details>
+  {% from 'model-lab.html' import preparation_panel %}
+  {{ preparation_panel() }}
+
+  <details class="support-details"><summary>테이블 정보 · 구조 재생성</summary>
+    <div class="storage-summary" aria-live="polite"><div class="section-heading"><div><span class="muted">실제 Oracle 테이블</span><h3 id="storage-name">로그인 후 확인</h3></div></div><dl class="storage-facts"><div><dt>적재 행 수</dt><dd id="storage-rows">—</dd></div><div><dt>OBJECT_ID</dt><dd id="storage-object">—</dd></div><div><dt>테이블 생성 시각</dt><dd id="storage-created">—</dd></div></dl><p class="muted" id="storage-views">테이블명과 실제 Oracle 객체 ID가 표시됩니다.</p></div>
+  <div id="recreate-tools" class="recreate-tools" hidden><p>일반 교체 적재는 원본 테이블 구조와 OBJECT_ID를 유지합니다. 재생성은 <b>선택 CSV 읽기·검사 → 원본 DATA만 DROP → CREATE → CSV INSERT VALUES → COMMIT</b> 순서입니다. 원본에서 SELECT하여 다시 복사하지 않습니다. DROP은 롤백되지 않으므로 실패 시 같은 CSV를 다시 적재해야 합니다. 두 작업 모두 전처리 저장 → 재학습 → 확정이 필요합니다.</p><span class="action-with-help"><button type="button" id="recreate-training" class="danger">테이블 재생성 및 적재</button><button type="button" class="secondary code-help" data-code="recreate" aria-label="테이블 재생성 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-4" title="테이블 재생성 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-4" class="code-help-tooltip" role="tooltip">테이블 재생성 코드 보기</span></span></div>
+  </details>
+  <details class="stock-brief"><summary>실습 자료 · 정답 기준 · 컬럼 · 출처</summary>
+    <p><strong>이번 주 장이 끝났습니다. 다음 주 매수·매도 신호를 예측해 보세요.</strong><br>이번 주 등락률·고저폭·거래량 변화·종가·종목을 보고, 다음 주 시가 대비 종가가 상승하면 <b>BUY · 매수</b>, 비상승이면 <b>SELL · 매도/매수 회피</b>로 분류합니다.</p>
+    <dl class="storage-facts"><div><dt>① 과거로 학습</dt><dd>330행 · 1/7~3/18</dd></div><div><dt>② 이후 기간으로 평가</dt><dd>360행 · 4/1~6/17</dd></div><div><dt>③ 마지막 주로 예측</dt><dd>30종목 · 6/24</dd></div></dl>
+    <p class="muted">모두 2011년 자료입니다. 학습 CSV는 경계 주 3/25의 미사용 30행을 포함한 720행입니다. 마지막 주 30행은 별도 예측 CSV로 제공합니다.</p>
+    <details><summary>항목 설명 · 정답 기준 · 출처 확인</summary>
+      <div class="table-wrap"><table id="basic-column-meanings"><thead><tr><th scope="col">영문 컬럼명</th><th scope="col">한글 명칭</th><th scope="col">뜻과 계산</th></tr></thead><tbody>
+        <tr><td>CASE_ID</td><td>사례번호</td><td>학습·평가 행의 고유 번호 · 모델 특성에서 제외</td></tr>
+        <tr><td>RETURN_PCT</td><td>주간등락률</td><td>이번 주 (종가 − 시가) ÷ 시가 × 100 · %</td></tr>
+        <tr><td>RANGE_PCT</td><td>주간고저폭</td><td>이번 주 (고가 − 저가) ÷ 시가 × 100 · %</td></tr>
+        <tr><td>VOLUME_CHANGE_PCT</td><td>거래량증감률</td><td>전주 대비 거래량 증감률 · % · 음수도 정상</td></tr>
+        <tr><td>CLOSE_PRICE</td><td>종가</td><td>이번 주 종가 · 미국 달러(USD)</td></tr>
+        <tr><td>STOCK</td><td>종목코드</td><td>2011년 당시 종목 코드</td></tr>
+        <tr><td>SIGNAL</td><td>매매신호</td><td>다음 주 종가 &gt; 다음 주 시가: BUY, 그 외: SELL · 예측 입력에 정답을 넣지 않음</td></tr>
+        <tr><td>WEEK_ENDING</td><td>주마감일</td><td>판단 기준 주의 마지막 거래일 · 모델 특성에서 제외</td></tr>
+        <tr><td>SPLIT</td><td>데이터구분</td><td>TRAIN: 학습, TEST: 평가 · 기간으로 구분</td></tr>
+        <tr><td>USE_YN</td><td>사용여부</td><td>Y: 사용, N: 제외 · 3/25는 다음 주 정답이 TEST 시작과 겹쳐 N</td></tr>
+      </tbody></table></div>
+      <p>값에는 단위를 넣지 않습니다. 단위는 컬럼 제목에만 표시합니다. 첫 주 거래량 변화 결측을 보존하고, 정제 연습용으로 빈 셀(NULL)·unknown(유효하지 않은 값)·999999(매우 큰 이상치)만 추가했습니다. 가격·정답을 합성한 자료가 아니며 추가 결함은 라벨·모델 점수와 독립적으로 정했습니다.</p>
+      <p>전처리 INSERT SELECT는 원본을 보존하면서 PREPARED에 숫자형으로 저장합니다. 빈 셀과 unknown은 두 방식에서 NULL, RAW는 숫자 이상치를 유지하고 CLEAN은 범위 밖 숫자를 NULL로 저장합니다. 학습 제공 여부는 준비 테이블의 FIT_YN으로 확인합니다. 정제 후 성능 향상은 보장하지 않습니다.</p>
+      <p>출처: Brown, M. (2013), <a href="https://doi.org/10.24432/C5788V" target="_blank" rel="noopener">UCI Dow Jones Index</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> · <a href="/download/stock-source.json">가공 내역·분할 정보</a></p>
+    </details>
+    <p class="comparison-note">과거 데이터의 방향 분류 실습입니다. 수수료·슬리피지·배당을 반영한 수익률이나 현재 투자 추천이 아니며, SELL은 공매도 주문을 뜻하지 않습니다.</p>
+  </details>
+</section>

@@ -1,0 +1,8 @@
+<details class="object-naming-guide"><summary>기본·미션·창의 공통 명명규칙</summary>
+  <p>역할별 고정 이름: <code>_DATA</code> 원본 TRAIN·TEST → <code>_PREPARED</code> 전처리 저장·모델 입력, <code>_PREDICT</code> 예측 원본, <code>_RUN</code> 실행 프로시저입니다. 학습·평가·예측은 PREPARED의 해당 구분을 읽습니다.</p>
+  <div class="table-wrap"><table><thead><tr><th scope="col">과제</th><th scope="col">원본</th><th scope="col">모델 입력</th><th scope="col">예측 입력</th><th scope="col">프로시저</th></tr></thead><tbody>
+    <tr><th scope="row">기본</th><td><code>{{ basic_objects.training_table }}</code></td><td><code>{{ basic_objects.prepared_table }}</code></td><td><code>{{ basic_objects.prediction_table }}</code></td><td><code>{{ basic_objects.procedure_name }}</code></td></tr>
+    {% for key in ['mission','creative'] %}<tr><th scope="row">{{ assignments[key].title }}</th><td><code>{{ assignments[key].training_table }}</code></td><td><code>{{ assignments[key].prepared_table }}</code></td><td><code>{{ assignments[key].prediction_table }}</code></td><td><code>{{ assignments[key].procedure_name }}</code></td></tr>{% endfor %}
+  </tbody></table></div>
+  <p>세 과제 모두 위 이름과 프로시저 인자를 고정합니다. 학생은 미션·창의의 테이블 컬럼·정답·전처리·모델 SQL을 수정합니다. 웹 코드는 그대로 사용하며, 같은 계정에서 DB에 생성한 뒤 연결 확인을 누릅니다.</p>
+</details>

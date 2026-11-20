@@ -1,0 +1,7 @@
+SELECT LINE
+     , TEXT
+  FROM USER_SOURCE
+ WHERE NAME = :procedure_name
+   AND TYPE = 'PROCEDURE'
+ ORDER BY LINE
+;

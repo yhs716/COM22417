@@ -1,0 +1,8 @@
+-- 적재 직전 발급 계정·CURRENT_SCHEMA를 함께 검사합니다.
+BEGIN
+  IF SYS_CONTEXT('USERENV', 'SESSION_USER') <> :owner
+     OR SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') <> :owner THEN
+    RAISE_APPLICATION_ERROR(-20030, '발급 계정과 CURRENT_SCHEMA를 확인하세요.');
+  END IF;
+END;
+/

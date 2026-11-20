@@ -1,0 +1,41 @@
+{% from 'workflow-sections.html' import step_heading %}
+{% from 'model-lab.html' import mode_choice %}
+<!-- 예측: 입력 적재 → 이번 실행 모델 선택 → 실행 → 결과 조회. -->
+<section class="panel compact-workbench prediction-lab">
+  <div class="section-heading"><div><h2>예측 실행</h2><div class="object-line"><span>입력 테이블</span> <code>{{ basic_objects.prediction_table }}</code> <span class="muted">전체 행 · RAW/CLEAN 공통 입력</span></div></div><a href="/basic#models" data-basic-tab="models" class="button secondary">3단계 · 모델 성능 비교 →</a></div>
+
+  <section class="learning-workstep" data-prediction-stage="csv">{{ step_heading(1,'예측 CSV 적재','새 입력을 PREDICT 테이블에 저장합니다.') }}
+  <form id="prediction-import"><div class="csv-upload"><label for="prediction-file">예측 CSV</label><div class="upload-choice-row"><input id="prediction-file" type="file" accept=".csv,text/csv"><button type="button" id="choose-prediction" class="secondary">기본 데이터 선택</button></div><div class="upload-footer"><span id="prediction-filename" class="muted">선택한 CSV가 없습니다.</span><div class="actions"><span class="action-with-help"><button type="button" id="preview-prediction" class="secondary">미리보기</button><button type="button" class="secondary code-help" data-code="prediction-preview" aria-label="예측 CSV 미리보기 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-12" title="예측 CSV 미리보기 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-12" class="code-help-tooltip" role="tooltip">예측 CSV 미리보기 코드 보기</span></span><span class="action-with-help"><button type="submit" id="prediction-import-submit">예측 CSV 최초 적재</button><button type="button" class="secondary code-help" data-code="prediction-import" aria-label="예측 CSV 적재 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-13" title="예측 CSV 적재 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-13" class="code-help-tooltip" role="tooltip">예측 CSV 적재 코드 보기</span></span><button type="submit" id="replace-prediction" class="secondary">예측 CSV 교체 적재</button></div></div></div></form><div class="reset-actions"><span class="action-with-help"><button type="button" id="clear-prediction" class="secondary danger" data-basic-lifecycle="clear-prediction">예측 입력 비우기</button><button type="button" class="secondary code-help" data-code="clear-prediction" aria-label="예측 입력 비우기 코딩도움말">?</button></span><small>예측 입력·예측 전처리값 삭제</small></div>
+  <p id="prediction-import-status" class="execution-status control-status" role="status">로그인 후 예측 입력 테이블의 상태를 확인합니다.</p>
+  <div id="prediction-preview-box" class="csv-preview" hidden><div class="section-heading"><h3>CSV 미리보기</h3><button type="button" id="close-prediction-preview" class="secondary">접기</button></div><p id="prediction-quality" class="quality"></p><div id="prediction-preview" class="table-wrap empty"></div></div>
+
+  </section>
+  <details id="loaded-predictions" class="learning-workstep original-data-step" data-prediction-stage="original" open><summary id="loaded-predictions-title">{{ step_heading(2,'예측 입력 확인','적재된 입력을 먼저 확인합니다.') }}<span id="loaded-predictions-count" class="muted"></span></summary>
+    <div class="storage-summary" aria-live="polite"><div class="section-heading"><div><span class="muted">예측 적재 테이블</span><h3 id="prediction-storage-name">로그인 후 확인</h3></div><span id="prediction-storage-state" class="pill">확인 대기</span></div><dl class="storage-facts"><div><dt>OBJECT_ID</dt><dd id="prediction-storage-object">—</dd></div><div><dt>최근 적재 시각</dt><dd id="prediction-storage-loaded">—</dd></div></dl></div>
+    <div class="actions"><span class="action-with-help"><button type="button" id="query-prediction-data" class="secondary">예측 입력 조회</button><button type="button" class="secondary code-help" data-code="prediction-data" aria-label="저장 데이터 조회 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-15" title="저장 데이터 조회 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-15" class="code-help-tooltip" role="tooltip">저장 데이터 조회 코드 보기</span></span><a class="button secondary" href="/download/prediction.csv">기본 CSV 다운로드</a></div><div id="prediction-data" class="table-wrap empty">적재된 데이터가 없습니다.</div>
+    <p>CSV 재적재는 예측 테이블의 행을 교체합니다. 테이블 ID·학습 데이터·모델은 유지됩니다. 기본 CSV는 학습·TEST와 겹치지 않는 2011-06-24의 30종목이며, 비교용 정답 SIGNAL을 비워 두었습니다.</p>
+  </details>
+  <div class="prediction-model-panel learning-workstep" data-prediction-stage="predict">
+  {{ step_heading(3,'두 모델 예측·비교','RAW 예측 후 CLEAN으로 전환해 같은 입력의 결과를 비교합니다.') }}
+  <div class="section-heading compact-heading"><h3>현재 예측 작업</h3><code id="prediction-model">미확정</code></div>
+  {{ mode_choice('prediction-model-select','prediction-model','OML_BASIC',true) }}
+  <div class="object-line"><span>전처리 저장·모델 입력</span><code>{{ basic_objects.prepared_table }}</code><span class="muted">SOURCE_KIND = 'PREDICT'</span></div>
+  <p id="prediction-mode-rule" class="execution-condition">선택 모델의 규칙으로 예측 입력을 전처리·저장한 뒤 예측합니다. TRAIN·TEST 준비값은 유지합니다.</p>
+  <div class="execution-toolbar"><div class="actions"><span class="action-with-help"><button id="run" disabled>예측 실행</button><button type="button" class="secondary code-help" data-execution="predict" aria-label="예측 실행 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-14" title="예측 실행 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-14" class="code-help-tooltip" role="tooltip">예측 실행 코드 보기</span></span></div><p class="muted">예측 입력 <strong id="prediction-storage-rows">—</strong></p></div>
+  <input id="experiment" type="hidden" value="baseline">
+  <p id="prediction-model-help" class="muted execution-status" role="status">생성된 모델을 확인하고 있습니다.</p>
+  <p id="prediction-ready" class="muted execution-status">최신 모델을 선택하고 예측 데이터를 적재하세요.</p>
+  </div>
+
+  <section class="learning-workstep" data-prediction-stage="result">{{ step_heading(4,'예측 결과','분류와 확률을 확인합니다.') }}
+  <div class="section-heading result-heading"><div><h4>실행 결과</h4><p class="muted" id="result-caption">RAW 또는 CLEAN 모델을 선택하고 예측을 실행하세요.</p></div><span class="pill" id="result-state">실행 대기</span><a id="prediction-proof-return" href="/basic#home" data-basic-tab="home" hidden>최종 현황 확인 →</a></div>
+  <span id="prediction-error" hidden></span><div id="results" class="table-wrap empty">실행한 결과가 없습니다.</div>
+  <p class="compact-note muted">기본 제공 SQL 기준: 분류·확률은 화면 조회 결과입니다. 예측 전처리 값은 DB에 저장되며, 화면 결과·비교 기록은 새로고침 시 초기화됩니다. 제출 방법은 좌측 메뉴 하단의 「과제 설명 및 평가」를 확인하세요.</p>
+  <p class="muted result-legend">BUY = 다음 주 상승 예상 · SELL = 비상승 예상 · PROBABILITY는 조회된 0~1 값 그대로 표시합니다. NULL은 빈 셀입니다.</p>
+
+
+  </section>
+  <details><summary>실제 예측 테이블 컬럼 확인</summary><span class="action-with-help"><button type="button" id="query-prediction-columns" class="secondary">컬럼 다시 조회</button><button type="button" class="secondary code-help" data-code="columns" aria-label="예측 컬럼 조회 코딩도움말: SQL·소스 위치" aria-describedby="coding-tooltip-16" title="예측 컬럼 조회 코딩도움말: SQL·소스 위치"><span aria-hidden="true">?</span></button><span id="coding-tooltip-16" class="code-help-tooltip" role="tooltip">예측 컬럼 조회 코드 보기</span></span><div id="columns" class="table-wrap empty">입력 구성을 확인하세요.</div></details>
+  <details><summary>예측 변화 비교 · 이번 화면의 실행 기록</summary><p class="muted">같은 입력의 이전 성공 결과와 분류·확률 변화를 비교합니다. 과거 기록이며 새로고침·로그아웃 때 초기화됩니다.</p><div id="history" class="table-wrap empty">같은 입력에서 모델·학습을 바꿔 예측하면 분류와 확률의 변화 행 수를 표시합니다.</div></details>
+</section>
+{% include "pages/prediction-contract.html" %}

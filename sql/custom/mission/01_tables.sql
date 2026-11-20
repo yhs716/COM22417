@@ -1,0 +1,7 @@
+-- DB 오브젝트 소유자는 학번이 아닌 발급 DB 계정입니다. STUDENT00은 예시이며 본인 발급 계정으로 바꾸세요.
+-- 테이블·프로시저·모델은 STUDENT00.OML_MISSION_이름 형식으로 작성하고 같은 계정에서 실행하세요.
+-- 미션과제: 현황에서 미션을 선택하고 선택 미션 SQL 가이드를 사용하세요.
+-- 가이드의 01_tables.sql 다운로드를 이 경로에 저장하여 수정합니다.
+-- 테이블 실행 순서: DATA → PREPARED → PREDICT, 이후 RUN 프로시저 등록.
+-- 이 파일은 저장 위치 안내이며 실행 SQL은 선택한 미션별로 제공됩니다.
+-- 고정 연결 이름: OML_MISSION_DATA / OML_MISSION_PREPARED / OML_MISSION_PREDICT / OML_MISSION_RUN

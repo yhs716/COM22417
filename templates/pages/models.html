@@ -1,0 +1,32 @@
+{% from 'model-lab.html' import model_lab, model_learning %}
+<section class="panel model-workbench">
+  {{ model_lab() }}
+  <div class="section-heading result-heading"><div><h3>같은 TEST · 정제 전후 비교</h3><p class="execution-note" id="comparison-summary" role="status">두 모델을 각각 생성하면 같은 TEST 결과를 비교합니다.</p></div><span class="action-with-help"><button id="query-models" type="button" class="secondary">TEST 평가·새로고침</button><button type="button" class="secondary code-help" data-code="evaluate" data-variant="BOTH" aria-label="TEST 평가 Oracle SQL 보기" aria-describedby="coding-tooltip-7"><span aria-hidden="true">?</span></button><span id="coding-tooltip-7" class="code-help-tooltip" role="tooltip">두 모델 TEST 평가 SQL 보기</span></span></div>
+  <div class="table-wrap compare-wrap model-comparison-wrap"><table class="compare-table" id="model-comparison">
+    <thead><tr><th scope="col">비교 항목</th><th scope="col">RAW · 정제 미적용<code class="compare-model-name">OML_BASIC_RAW_MODEL</code></th><th scope="col">CLEAN · 정제 적용<code class="compare-model-name">OML_BASIC_CLEAN_MODEL</code></th></tr></thead>
+    <tbody>
+      <tr><th scope="row">모델 상태</th>{% for v in ['RAW','CLEAN'] %}<td id="card-{{ v }}"><span id="state-{{ v }}" class="pill">미생성</span></td>{% endfor %}</tr>
+      <tr class="score-row"><th scope="row">TEST 정확도</th>{% for v in ['RAW','CLEAN'] %}<td><strong id="accuracy-{{ v }}">—</strong></td>{% endfor %}</tr>
+      <tr><th scope="row">정답 / TEST · 오분류</th>{% for v in ['RAW','CLEAN'] %}<td><span id="correct-{{ v }}">—</span> · 오분류 <span id="errors-{{ v }}">—</span></td>{% endfor %}</tr>
+      <tr class="model-actions"><th scope="row">기본 예측 모델</th>{% for v in ['RAW','CLEAN'] %}<td><span class="action-with-help"><button class="secondary" data-confirm="{{ v }}" disabled>기본 예측 모델로 지정</button><button type="button" class="secondary code-help" data-code="confirm" data-variant="{{ v }}" aria-label="예측 모델 확정 코딩도움말" aria-describedby="coding-tooltip-10-{{ v }}"><span aria-hidden="true">?</span></button><span id="coding-tooltip-10-{{ v }}" class="code-help-tooltip" role="tooltip">최신 모델 검증·웹 확정 저장 코드</span></span></td>{% endfor %}</tr>
+    </tbody>
+  </table></div>
+  <div class="reset-actions"><span class="action-with-help"><button type="button" id="unconfirm-model" class="secondary" data-basic-lifecycle="unconfirm">모델 확정 해제</button><button type="button" class="secondary code-help" data-code="unconfirm" aria-label="모델 확정 해제 코딩도움말">?</button></span><small>모델은 유지하고 예측에 사용할 선택만 해제</small></div>
+  <div class="result-footer"><span>정제·데이터 증가가 성능 향상을 보장하지 않습니다.</span><a href="/basic#predictions" data-basic-tab="predictions">예측 실행 →</a></div>
+  {{ model_learning() }}
+  <details class="workbench-detail"><summary>추가 지표 · 정밀도·재현율·분류별 건수</summary><p id="evaluation-scope" class="execution-note">동일한 Y/TEST 행으로 평가</p><div class="table-wrap"><table class="compare-table"><thead><tr><th>추가 지표</th><th>RAW</th><th>CLEAN</th></tr></thead><tbody><tr><th>BUY 정밀도 / 재현율</th>{% for v in ['RAW','CLEAN'] %}<td><span id="precision-{{ v }}">—</span> / <span id="recall-{{ v }}">—</span></td>{% endfor %}</tr></tbody></table></div><p>정확도는 정답 / TEST 행 수입니다. BUY 정밀도는 BUY 예측 중 실제 BUY 비율, 재현율은 실제 BUY 중 맞힌 비율입니다. 투자 수익률이 아닙니다.</p><p id="constant-baseline" class="comparison-note">모델 생성 후 항상 BUY·항상 SELL 기준 정확도를 표시합니다.</p><div id="metrics" class="table-wrap compare-wrap empty">모델을 생성하세요.</div></details>
+  <details class="workbench-detail"><summary>모델 설정 · 정제 규칙 · 등록 속성</summary><div id="model-settings" class="table-wrap compare-wrap"></div><div id="model-info" class="table-wrap compare-wrap"></div><h3>DB 설정</h3><div id="model-details" class="table-wrap compare-wrap empty">모델을 생성하세요.</div><h3>등록 속성</h3><p>SIGNAL은 타깃입니다. 날짜·사용 여부·TRAIN/TEST·미래 가격은 입력 특성에서 제외합니다.</p><div id="model-attributes" class="table-wrap compare-wrap empty">모델을 생성하세요.</div></details>
+  <details class="workbench-detail dictionary-disclosure"><summary>Oracle 모델 딕셔너리 조회</summary>
+  <section class="model-dictionary-panel" aria-labelledby="model-dictionary-title">
+    <div class="section-heading"><div><h2 id="model-dictionary-title">Oracle 모델 딕셔너리</h2><p class="muted">위에서 선택한 RAW/CLEAN 모델의 실제 DB 정보를 읽기 전용으로 조회합니다.</p></div><span class="action-with-help"><button type="button" id="query-model-dictionary" class="secondary">모델 정보 조회</button><button type="button" class="secondary code-help" data-code="model-dictionary" aria-label="Oracle 모델 딕셔너리 조회 SQL·소스 도움말" aria-describedby="tip-model-dictionary" title="모델 딕셔너리 조회 SQL 보기"><span aria-hidden="true">?</span></button><span id="tip-model-dictionary" class="code-help-tooltip" role="tooltip">모델 개요·속성·설정·상세 뷰·변환·객체 상태의 SQL 보기</span></span></div>
+    <p class="comparison-note">USER_는 본인 소유, ALL_는 접근 가능한 객체, DBA_는 DB 전체 정보이며 별도 권한이 필요합니다. VALID는 DB 객체 유효 상태입니다. 웹의 최신 학습 검증·선택 확정과는 다르며 TEST 정확도는 같은 TEST로 따로 평가합니다.</p>
+    <div id="model-dictionary-results" class="dictionary-results"><p class="muted">모델 생성 후 ‘모델 정보 조회’를 누르세요. 생성 전에도 ?에서 조회 SQL과 읽는 방법을 확인할 수 있습니다.</p></div>
+    <details class="dictionary-guide"><summary>어떤 뷰를 공부하나요? · 결과 읽는 방법</summary>
+      <dl><dt>USER_MINING_MODELS</dt><dd>모델명·분류 목적·알고리즘·생성 시각·학습 시간(초)·크기(MB)</dd><dt>USER_MINING_MODEL_ATTRIBUTES</dt><dd>모델 시그니처의 속성명·논리/DB 타입·타깃 여부. TARGET=YES는 정답 컬럼이며 이 목록이 트리 분기 조건 전체를 뜻하지 않습니다.</dd><dt>USER_MINING_MODEL_SETTINGS</dt><dd>모델 설정과 INPUT(명시값) / DEFAULT(기본값). PREP_AUTO와 SQL의 수동 정제를 구분하세요.</dd><dt>USER_MINING_MODEL_VIEWS</dt><dd>Oracle이 생성한 실제 상세 뷰 목록. 트리 계층·노드·통계·타깃·비용 행렬 등의 제공 여부를 확인하고 실제 이름으로 조회합니다.</dd><dt>USER_MINING_MODEL_XFORMS</dt><dd>사용자 지정 내장 변환. PREPARED에 저장하는 INSERT SELECT의 CASE·TO_NUMBER는 여기 기록되지 않으므로 0행도 정상입니다.</dd><dt>USER_OBJECTS</dt><dd>MINING MODEL 객체 ID·VALID·DDL 시각. 웹 확정 상태를 저장하는 뷰가 아닙니다.</dd></dl>
+      <p>모델이 없으면 등록 정보가 0행입니다. 모델이 있어도 변환·상세 뷰 제공 여부에 따라 0행일 수 있습니다. 조회 오류는 0행으로 바꾸지 않고 오류로 안내합니다. 상세 뷰 이름·열 구성은 알고리즘과 DB 버전에 따라 다릅니다.</p>
+      <a href="https://docs.oracle.com/en/database/oracle/machine-learning/oml4sql/21/dmapi/oml4sql-data-dictionary-vews.html" target="_blank" rel="noopener noreferrer">Oracle 공식 딕셔너리 뷰 안내</a>
+    </details>
+  </section>
+  </details>
+  <details class="workbench-detail"><summary>실습 기록 · 재학습 전후 TEST 비교</summary><p>성공한 평가의 과거 기록입니다. TEST·정답을 고정해 비교하세요. 새로고침·로그아웃 시 초기화합니다.</p><div id="model-lab-history" class="table-wrap empty">학습 후 TEST를 조회하면 기록됩니다.</div></details>
+</section>
